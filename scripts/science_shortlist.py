@@ -1,59 +1,48 @@
 #!/usr/bin/env python3
-"""Explainable first-pass shortlist for Crossref science candidates.
-
-This is prioritization only. It does not assert novelty, importance, or validity.
-"""
+"""Explainable research shortlisting. Priority only; not a quality verdict."""
 import argparse
+import html
 import json
+import os
 import re
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
 from collections import defaultdict
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 SUBJECTS = ("Physics", "Biology", "Chemistry", "Astronomy", "Computer Science")
-TARGET_PER_SUBJECT = 5
-MIN_PER_SUBJECT = 4
 MAX_PER_SUBJECT = 6
+MIN_SCORE = 3
+ABSTRACT_FETCH_LIMIT = 200
+REQUEST_INTERVAL_SECONDS = 0.25
+NON_RESEARCH_TYPES = {"editorial", "correction", "erratum", "retraction", "news", "letter", "commentary"}
+EXPLICIT_NON_RESEARCH_TITLE = re.compile(
+    r"^(?:erratum|correction to|author correction|retraction|corrigendum|expression of concern)\s*:",
+    re.IGNORECASE,
+)
+REVIEW_TITLE = re.compile(r"\b(review|survey|perspective|overview|state[- ]of[- ]the[- ]art|tutorial)\b", re.IGNORECASE)
+RESEARCH_TITLE = re.compile(
+    r"\b(measurement|detection|characteri[sz]ation|synthesis|structure|dynamics|"
+    r"evolution|association|regulation|quantif|analysis|observed|experiment|"
+    r"sequencing|profiling|classification|optimization|model)\b",
+    re.IGNORECASE,
+)
+ABSTRACT_RE = re.compile(r"<jats:abstract[^>]*>(.*?)</jats:abstract>|<abstract[^>]*>(.*?)</abstract>", re.I | re.S)
+TAG_RE = re.compile(r"<[^>]+>")
 
-NON_RESEARCH_PATTERNS = (
-    r"^editorial$",
-    r"^commentary$",
-    r"^correction$",
-    r"^erratum$",
-    r"^corrigendum$",
-    r"^news$",
-    r"^letter$",
-    r"^retraction$",
-    r"^expression of concern$",
-)
-NON_RESEARCH_TITLE = re.compile(
-    r"\b(editorial|correction|erratum|corrigendum|news|commentary|perspective|"
-    r"retraction|expression of concern|in memoriam|obituary)\b",
-    re.IGNORECASE,
-)
-RESEARCH_TYPE_HINTS = {
-    "journal-article",
-    "research-article",
-    "article",
-    "original-research",
-}
-QUESTION_HINTS = re.compile(
-    r"\b(effect|mechanism|structure|dynamics|evolution|measurement|detection|"
-    r"characteri[sz]ation|synthesis|design|discovery|analysis|model|observed|"
-    r"quantif|intervention|association|regulation|conservation|classification)\b",
-    re.IGNORECASE,
-)
-INNOVATION_HINTS = re.compile(
-    r"\b(new|novel|first|high[- ]resolution|single[- ]cell|large[- ]scale|"
-    r"deep learning|machine learning|genome[- ]wide|multi[- ]modal|precision|"
-    r"unprecedented|framework|platform|method|approach|atlas|survey)\b",
-    re.IGNORECASE,
-)
-SIGNIFICANCE_HINTS = re.compile(
-    r"\b(implications?|enables?|reveals?|establishes?|provides?|understanding|"
-    r"therapeutic|climate|cosmolog|fundamental|translat|application)\b",
-    re.IGNORECASE,
-)
+
+def clean_text(value):
+    value = html.unescape(str(value or ""))
+    value = TAG_RE.sub("", value)
+    value = re.sub(r"\s+", " ", value)
+    return value.strip()
+
+
+def normalize_title(value):
+    return clean_text(value)
 
 
 def parse_date(value):
@@ -66,82 +55,110 @@ def parse_date(value):
         return None
 
 
-def text(value):
-    if isinstance(value, list):
-        return " ".join(str(part) for part in value)
-    return str(value or "").strip()
-
-
-def normalize_title(value):
-    import html
-    value = html.unescape(text(value))
-    value = re.sub(r"<[^>]*>", "", value)
-    return re.sub(r"\s+", " ", value).strip()
-
-
-def abstract_info(paper):
-    abstract = paper.get("abstract") or paper.get("abstractText")
-    if abstract:
-        return {"text": text(abstract), "source": paper.get("abstractSource") or "science-candidates.json"}
-    return {"text": "", "source": None}
-
-
-def classify_exclusion(paper):
+def classify_paper(paper):
     title = normalize_title(paper.get("title"))
-    record_type = text(paper.get("recordType")).lower()
-    if NON_RESEARCH_TITLE.search(title):
-        return "标题含社论、勘误、新闻评论或撤稿等非研究性标记"
-    if any(re.search(pattern, record_type) for pattern in NON_RESEARCH_PATTERNS):
-        return "记录类型属于非研究性内容"
-    return None
+    record_type = str(paper.get("recordType") or "").lower().strip()
+    if EXPLICIT_NON_RESEARCH_TITLE.search(title) or record_type in NON_RESEARCH_TYPES:
+        return "non-research", "明确的勘误、撤稿、社论或评论记录"
+    if REVIEW_TITLE.search(title) or "review" in record_type or "survey" in record_type:
+        return "review", "标题或记录类型显示为综述/Survey/观点文章"
+    return "original-research", None
+
+
+def abstract_from_crossref(doi):
+    email = os.environ.get("CROSSREF_EMAIL", "").strip()
+    params = {}
+    if email:
+        params["mailto"] = email
+    url = "https://api.crossref.org/works/" + urllib.parse.quote(doi, safe="") + (
+        "?" + urllib.parse.urlencode(params) if params else ""
+    )
+    request = urllib.request.Request(
+        url,
+        headers={"User-Agent": "LearningOS-News/1.0 (research shortlisting)", "Accept": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            item = json.load(response).get("message", {})
+        raw = item.get("abstract")
+        if not raw:
+            return None, None, "Crossref metadata does not provide an abstract"
+        text = clean_text(raw)
+        if not text:
+            return None, None, "Crossref abstract is empty after cleaning"
+        return text[:4000], "Crossref DOI metadata", None
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
+        return None, None, f"Crossref abstract lookup failed: {type(exc).__name__}"
+
+
+def enrich_abstracts(papers):
+    enriched = 0
+    attempted = 0
+    for paper in papers[:ABSTRACT_FETCH_LIMIT]:
+        attempted += 1
+        abstract, source, error = abstract_from_crossref(paper.get("doi", ""))
+        if abstract:
+            paper["_abstract"] = abstract
+            paper["_abstractSource"] = source
+            enriched += 1
+        else:
+            paper["_abstractError"] = error
+        time.sleep(REQUEST_INTERVAL_SECONDS)
+    return attempted, enriched
 
 
 def score_candidate(paper):
-    title = text(paper.get("title"))
-    abstract = abstract_info(paper)
-    body = title + " " + abstract["text"]
-    reasons = []
+    title = normalize_title(paper.get("title"))
+    abstract = paper.get("_abstract") or ""
+    paper_type, type_reason = classify_paper(paper)
+    evidence = []
     questions = []
     score = 0
 
-    if text(paper.get("recordType")).lower() in RESEARCH_TYPE_HINTS:
+    if paper_type == "original-research":
         score += 2
-        reasons.append("记录类型为期刊研究文章")
-    else:
-        questions.append("记录类型不是常见原创研究类型，需要核对文章性质")
-
-    question_hits = sorted(set(m.group(0).lower() for m in QUESTION_HINTS.finditer(body)))
-    innovation_hits = sorted(set(m.group(0).lower() for m in INNOVATION_HINTS.finditer(body)))
-    significance_hits = sorted(set(m.group(0).lower() for m in SIGNIFICANCE_HINTS.finditer(body)))
-
-    if question_hits:
-        score += 2
-        reasons.append("标题或摘要出现明确研究问题/对象线索：" + ", ".join(question_hits[:4]))
-    else:
-        questions.append("标题或摘要未显示清晰的研究问题，需要人工核对")
-
-    if innovation_hits:
-        score += 2
-        reasons.append("出现可能的创新方法、数据或发现线索：" + ", ".join(innovation_hits[:4]))
-    else:
-        questions.append("缺少明确创新性线索，不能仅凭期刊判断")
-
-    if significance_hits:
+        evidence.append("记录未显示为综述或非研究类型")
+    elif paper_type == "review":
         score += 1
-        reasons.append("出现潜在科学意义或应用线索：" + ", ".join(significance_hits[:3]))
-
-    if abstract["text"]:
-        score += 1
-        reasons.append("候选数据中存在摘要，可进行下一阶段核查")
+        evidence.append("标记为综述/Survey，适合背景审查而非新实验结论")
+        questions.append("需确认是否为综述而非原创实验研究")
     else:
-        questions.append("未提供摘要，需通过合法元数据接口或原文补充；本程序未臆造摘要")
+        return None
 
-    if parse_date(paper.get("publicationDate")):
-        score += 1
+    title_hits = sorted(set(m.group(0).lower() for m in RESEARCH_TITLE.finditer(title)))
+    if title_hits:
+        score += min(2, len(title_hits))
+        evidence.append("标题含研究对象或方法线索：" + ", ".join(title_hits[:4]))
     else:
+        questions.append("标题未显示清晰的研究问题或方法")
+
+    if abstract:
+        score += 3
+        evidence.append("已获得可清洗的摘要，可进行下一阶段内容核查")
+        confidence = "medium"
+        if len(abstract) >= 400:
+            score += 1
+            confidence = "high"
+    else:
+        questions.append("摘要不可用，不能据此判断研究结论、创新性或科学意义")
+        confidence = "low"
+
+    if not parse_date(paper.get("publicationDate")):
         questions.append("发表日期精度或格式需要核验")
 
-    return score, reasons, questions, abstract
+    if paper_type == "review":
+        score = min(score, 5)
+
+    return {
+        "score": score,
+        "confidence": confidence,
+        "paperType": paper_type,
+        "evidence": evidence,
+        "questions": questions,
+        "abstract": abstract or None,
+        "abstractSource": paper.get("_abstractSource"),
+        "typeReason": type_reason,
+    }
 
 
 def load_candidates(path):
@@ -149,78 +166,7 @@ def load_candidates(path):
     papers = payload.get("papers", [])
     if not isinstance(papers, list):
         raise ValueError("science-candidates.json 的 papers 必须是数组")
-    return payload, [paper for paper in papers if paper.get("subject") in SUBJECTS]
-
-
-def shortlist(payload, papers):
-    grouped = defaultdict(list)
-    excluded = []
-    for paper in papers:
-        exclusion = classify_exclusion(paper)
-        if exclusion:
-            excluded.append({"doi": paper.get("doi"), "title": normalize_title(paper.get("title")), "reason": exclusion})
-            continue
-        score, reasons, questions, abstract = score_candidate(paper)
-        item = {
-            "score": score,
-            "paper": paper,
-            "reasons": reasons,
-            "questions": questions,
-            "abstract": abstract,
-        }
-        grouped[paper["subject"]].append(item)
-
-    selected = []
-    subject_stats = {}
-    for subject in SUBJECTS:
-        ranked = sorted(
-            grouped.get(subject, []),
-            key=lambda item: (
-                item["score"],
-                parse_date(item["paper"].get("publicationDate")) or date.min,
-                item["paper"].get("doi", ""),
-            ),
-            reverse=True,
-        )
-        chosen = ranked[:MAX_PER_SUBJECT]
-        # Prefer the configured target; fewer are allowed when the pool is exhausted.
-        chosen = chosen[:TARGET_PER_SUBJECT]
-        subject_stats[subject] = {
-            "inputCandidates": len(grouped.get(subject, [])),
-            "selected": len(chosen),
-            "target": TARGET_PER_SUBJECT,
-            "minimum": MIN_PER_SUBJECT,
-            "qualityNote": (
-                "候选不足或质量线索不足时不强行凑数"
-                if len(chosen) < MIN_PER_SUBJECT else
-                "按可解释规则选取，仍需后续人工核查"
-            ),
-        }
-        for item in chosen:
-            paper = item["paper"]
-            selected.append({
-                "doi": paper.get("doi"),
-                "title": normalize_title(paper.get("title")),
-                "titleOriginal": paper.get("titleOriginal") or paper.get("title"),
-                "journal": paper.get("journal"),
-                "subject": subject,
-                "publicationDate": paper.get("publicationDate"),
-                "publicationDateField": paper.get("publicationDateField"),
-                "recordType": paper.get("recordType"),
-                "url": paper.get("url"),
-                "abstract": item["abstract"]["text"] or None,
-                "abstractSource": item["abstract"]["source"],
-                "abstractStatus": "available" if item["abstract"]["text"] else "unavailable",
-                "priorityScore": item["score"],
-                "screeningReasons": item["reasons"],
-                "questionsForFurtherReview": item["questions"],
-                "screeningDisclaimer": (
-                    "初筛分数仅用于安排后续审查优先级，不代表研究质量、重要性或可信度。"
-                ),
-            })
-
-    selected.sort(key=lambda item: (SUBJECTS.index(item["subject"]), -item["priorityScore"], item["doi"] or ""))
-    return selected, excluded, subject_stats
+    return payload, [p for p in papers if p.get("subject") in SUBJECTS]
 
 
 def main():
@@ -230,12 +176,71 @@ def main():
     args = parser.parse_args()
 
     payload, papers = load_candidates(args.input)
-    selected, excluded, subject_stats = shortlist(payload, papers)
+    excluded = []
+    eligible = []
+    for paper in papers:
+        paper_type, reason = classify_paper(paper)
+        if paper_type == "non-research":
+            excluded.append({"doi": paper.get("doi"), "title": normalize_title(paper.get("title")), "reason": reason})
+        else:
+            eligible.append(paper)
+
+    attempted, fetched = enrich_abstracts(eligible)
+    grouped = defaultdict(list)
+    for paper in eligible:
+        result = score_candidate(paper)
+        if result and result["score"] >= MIN_SCORE:
+            grouped[paper["subject"]].append((result, paper))
+
+    selected = []
+    by_subject = {}
+    for subject in SUBJECTS:
+        ranked = sorted(
+            grouped.get(subject, []),
+            key=lambda pair: (
+                pair[0]["score"],
+                pair[0]["confidence"] == "high",
+                pair[0]["confidence"] == "medium",
+                parse_date(pair[1].get("publicationDate")) or date.min,
+                pair[1].get("doi", ""),
+            ),
+            reverse=True,
+        )[:MAX_PER_SUBJECT]
+        by_subject[subject] = {"inputEligible": sum(1 for p in eligible if p.get("subject") == subject), "selected": len(ranked), "max": MAX_PER_SUBJECT}
+        for result, paper in ranked:
+            selected.append({
+                "doi": paper.get("doi"),
+                "title": normalize_title(paper.get("title")),
+                "titleOriginal": paper.get("titleOriginal") or paper.get("title"),
+                "journal": paper.get("journal"),
+                "subject": subject,
+                "publicationDate": paper.get("publicationDate"),
+                "publicationDateField": paper.get("publicationDateField"),
+                "recordType": paper.get("recordType"),
+                "paperType": result["paperType"],
+                "url": paper.get("url") or ("https://doi.org/" + str(paper.get("doi"))),
+                "abstract": result["abstract"],
+                "abstractSource": result["abstractSource"],
+                "abstractStatus": "available" if result["abstract"] else "unavailable",
+                "priorityScore": result["score"],
+                "screeningConfidence": result["confidence"],
+                "screeningReasons": result["evidence"],
+                "questionsForFurtherReview": result["questions"],
+                "screeningDisclaimer": "初筛分数仅用于后续审查排序，不代表研究质量、重要性或可信度。",
+            })
+
+    selected.sort(key=lambda p: (SUBJECTS.index(p["subject"]), -p["priorityScore"], p["doi"] or ""))
+    scores = defaultdict(int)
+    confidences = defaultdict(int)
+    for paper in selected:
+        scores[str(paper["priorityScore"])] += 1
+        confidences[paper["screeningConfidence"]] += 1
+
     output = {
-        "schemaVersion": "1.0",
+        "schemaVersion": "1.1",
         "kind": "science_research_shortlist",
         "status": "ready_for_editorial_review",
-        "generatedAt": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(),
+        "generatedAt": datetime.now(timezone.utc).isoformat(),
         "source": {
             "file": args.input,
             "collectorStatus": payload.get("status"),
@@ -244,17 +249,23 @@ def main():
         },
         "rules": {
             "subjects": list(SUBJECTS),
-            "targetPerSubject": TARGET_PER_SUBJECT,
             "maxPerSubject": MAX_PER_SUBJECT,
-            "excludes": ["社论", "勘误", "新闻评论", "撤稿及相关记录"],
+            "minimumScore": MIN_SCORE,
             "journalPrestigeUsedAsImportance": False,
-            "abstractPolicy": "只使用输入中已有摘要；没有摘要明确标注，不生成摘要或结论",
+            "abstractPolicy": "优先读取 Crossref DOI 元数据；无摘要则明确标记，不编造",
+            "exclusionPolicy": "仅排除明确文献类型或标题开头的勘误/撤稿/社论等",
         },
         "statistics": {
             "inputCandidates": len(papers),
-            "selected": len(selected),
+            "eligibleCandidates": len(eligible),
             "excluded": len(excluded),
-            "bySubject": subject_stats,
+            "selected": len(selected),
+            "abstractLookupAttempted": attempted,
+            "abstractsFetched": fetched,
+            "abstractFetchRate": round(fetched / attempted, 4) if attempted else 0,
+            "scoreDistribution": dict(scores),
+            "confidenceDistribution": dict(confidences),
+            "bySubject": by_subject,
         },
         "papers": selected,
         "excluded": excluded,
