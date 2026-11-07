@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "kind": "science_evidence_package",
-  "generatedAt": "2026-11-07T14:42:28.150087+00:00",
+  "generatedAt": "2026-11-07T14:49:14.066364+00:00",
   "source": {
     "latestIndex": {
       "schemaVersion": "1.0",
@@ -80,38 +80,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202661032",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:23.362583+00:00",
+          "retrievedAt": "2026-11-07T14:49:03.182862+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7162016843",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:23.755670+00:00",
+          "retrievedAt": "2026-11-07T14:49:03.486244+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202661032",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:23.755687+00:00",
+          "retrievedAt": "2026-11-07T14:49:03.486267+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202660220",
@@ -139,38 +137,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202660220",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:23.781319+00:00",
+          "retrievedAt": "2026-11-07T14:49:03.683401+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7151468492",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:23.865882+00:00",
+          "retrievedAt": "2026-11-07T14:49:03.837408+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202660220",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:23.865901+00:00",
+          "retrievedAt": "2026-11-07T14:49:03.837426+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1038/s41588-026-02781-x",
@@ -258,21 +254,21 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1038/s41588-026-02781-x",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:23.918323+00:00",
+          "retrievedAt": "2026-11-07T14:49:04.005517+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7225324820",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:23.998227+00:00",
+          "retrievedAt": "2026-11-07T14:49:04.142550+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1038/s41588-026-02781-x",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:23.998249+00:00",
+          "retrievedAt": "2026-11-07T14:49:04.142568+00:00",
           "version": "open_access_location"
         }
       ],
@@ -387,38 +383,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1103/flqh-zxzr",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:24.055155+00:00",
+          "retrievedAt": "2026-11-07T14:49:04.378208+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7160873476",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:24.324875+00:00",
+          "retrievedAt": "2026-11-07T14:49:04.662605+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://arxiv.org/abs/2605.07176",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:24.324892+00:00",
+          "retrievedAt": "2026-11-07T14:49:04.662624+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
-        "title": false,
+        "doi": true,
+        "title": true,
         "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "title mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202662219",
@@ -454,38 +448,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202662219",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:24.350812+00:00",
+          "retrievedAt": "2026-11-07T14:49:04.800988+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7221064138",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:24.423720+00:00",
+          "retrievedAt": "2026-11-07T14:49:04.927378+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202662219",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:24.423737+00:00",
+          "retrievedAt": "2026-11-07T14:49:04.927396+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202662483",
@@ -521,38 +513,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202662483",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:24.446887+00:00",
+          "retrievedAt": "2026-11-07T14:49:05.089248+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7172417712",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:24.515125+00:00",
+          "retrievedAt": "2026-11-07T14:49:05.246069+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202662483",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:24.515142+00:00",
+          "retrievedAt": "2026-11-07T14:49:05.246088+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202659113",
@@ -596,38 +586,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202659113",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:24.541272+00:00",
+          "retrievedAt": "2026-11-07T14:49:05.412846+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7164492603",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:24.630595+00:00",
+          "retrievedAt": "2026-11-07T14:49:05.607374+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202659113",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:24.630611+00:00",
+          "retrievedAt": "2026-11-07T14:49:05.607393+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1021/jacs.6c13338",
@@ -691,31 +679,29 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1021/jacs.6c13338",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:24.667258+00:00",
+          "retrievedAt": "2026-11-07T14:49:05.764903+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7225178736",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:24.759214+00:00",
+          "retrievedAt": "2026-11-07T14:49:05.924631+00:00",
           "version": "metadata"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1109/tpami.2026.3726133",
@@ -767,21 +753,21 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1109/tpami.2026.3726133",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:24.846919+00:00",
+          "retrievedAt": "2026-11-07T14:49:06.105627+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W4417315111",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:24.920989+00:00",
+          "retrievedAt": "2026-11-07T14:49:06.260954+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://arxiv.org/abs/2509.19048",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:24.921006+00:00",
+          "retrievedAt": "2026-11-07T14:49:06.260973+00:00",
           "version": "open_access_location"
         }
       ],
@@ -864,31 +850,29 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1021/jacs.6c15915",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:24.950810+00:00",
+          "retrievedAt": "2026-11-07T14:49:06.437457+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7224555746",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:25.021339+00:00",
+          "retrievedAt": "2026-11-07T14:49:06.596495+00:00",
           "version": "metadata"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1021/jacs.6c14240",
@@ -924,31 +908,29 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1021/jacs.6c14240",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:25.047978+00:00",
+          "retrievedAt": "2026-11-07T14:49:06.795046+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7224928341",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:25.119637+00:00",
+          "retrievedAt": "2026-11-07T14:49:07.003005+00:00",
           "version": "metadata"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1021/jacs.6c13655",
@@ -1032,31 +1014,29 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1021/jacs.6c13655",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:25.148428+00:00",
+          "retrievedAt": "2026-11-07T14:49:07.196243+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7224954485",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:25.231907+00:00",
+          "retrievedAt": "2026-11-07T14:49:07.375486+00:00",
           "version": "metadata"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1021/jacs.6c17411",
@@ -1124,39 +1104,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1021/jacs.6c17411",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:25.258755+00:00",
+          "retrievedAt": "2026-11-07T14:49:07.539728+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7224579335",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:25.375914+00:00",
+          "retrievedAt": "2026-11-07T14:49:07.733471+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1021/jacs.6c17411",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:25.375931+00:00",
+          "retrievedAt": "2026-11-07T14:49:07.733490+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
-        "title": false,
-        "journal": false,
+        "doi": true,
+        "title": true,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "title mismatch",
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1103/pt64-m494",
@@ -1188,21 +1165,21 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1103/pt64-m494",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:25.472439+00:00",
+          "retrievedAt": "2026-11-07T14:49:07.890415+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7124158899",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:25.550809+00:00",
+          "retrievedAt": "2026-11-07T14:49:08.042049+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://arxiv.org/abs/2601.07943",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:25.550827+00:00",
+          "retrievedAt": "2026-11-07T14:49:08.042068+00:00",
           "version": "open_access_location"
         }
       ],
@@ -1273,21 +1250,21 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1103/25gn-bfgw",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:25.579098+00:00",
+          "retrievedAt": "2026-11-07T14:49:08.207487+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7134275658",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:25.655428+00:00",
+          "retrievedAt": "2026-11-07T14:49:08.371058+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "http://arxiv.org/abs/2603.05606",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:25.655445+00:00",
+          "retrievedAt": "2026-11-07T14:49:08.371078+00:00",
           "version": "open_access_location"
         }
       ],
@@ -1382,38 +1359,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202663271",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:25.681134+00:00",
+          "retrievedAt": "2026-11-07T14:49:08.499209+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7224950296",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:25.765878+00:00",
+          "retrievedAt": "2026-11-07T14:49:08.655249+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202663271",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:25.765895+00:00",
+          "retrievedAt": "2026-11-07T14:49:08.655267+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202662780",
@@ -1437,38 +1412,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202662780",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:25.790648+00:00",
+          "retrievedAt": "2026-11-07T14:49:08.819989+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7207833350",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:25.867559+00:00",
+          "retrievedAt": "2026-11-07T14:49:08.965972+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202662780",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:25.867576+00:00",
+          "retrievedAt": "2026-11-07T14:49:08.965991+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202661961",
@@ -1568,38 +1541,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202661961",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:25.898004+00:00",
+          "retrievedAt": "2026-11-07T14:49:09.160537+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7165757545",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:25.998449+00:00",
+          "retrievedAt": "2026-11-07T14:49:09.363835+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202661961",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:25.998466+00:00",
+          "retrievedAt": "2026-11-07T14:49:09.363854+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202661863",
@@ -1643,38 +1614,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202661863",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:26.037588+00:00",
+          "retrievedAt": "2026-11-07T14:49:09.522393+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7163883703",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:26.142402+00:00",
+          "retrievedAt": "2026-11-07T14:49:09.672305+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202661863",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:26.142418+00:00",
+          "retrievedAt": "2026-11-07T14:49:09.672321+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202661611",
@@ -1774,39 +1743,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202661611",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:26.173062+00:00",
+          "retrievedAt": "2026-11-07T14:49:09.838140+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7221185959",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:26.248909+00:00",
+          "retrievedAt": "2026-11-07T14:49:10.055850+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202661611",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:26.248926+00:00",
+          "retrievedAt": "2026-11-07T14:49:10.055867+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
-        "title": false,
-        "journal": false,
+        "doi": true,
+        "title": true,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "title mismatch",
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202661485",
@@ -1866,38 +1832,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202661485",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:26.281523+00:00",
+          "retrievedAt": "2026-11-07T14:49:10.258524+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7216541890",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:26.364305+00:00",
+          "retrievedAt": "2026-11-07T14:49:10.434790+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202661485",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:26.364322+00:00",
+          "retrievedAt": "2026-11-07T14:49:10.434807+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202558390",
@@ -1933,38 +1897,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202558390",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:26.409575+00:00",
+          "retrievedAt": "2026-11-07T14:49:10.568636+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7225254315",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:26.494337+00:00",
+          "retrievedAt": "2026-11-07T14:49:10.705735+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202558390",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:26.494353+00:00",
+          "retrievedAt": "2026-11-07T14:49:10.705752+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202556750",
@@ -2048,38 +2010,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202556750",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:26.522256+00:00",
+          "retrievedAt": "2026-11-07T14:49:10.825658+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W4414580821",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:26.600826+00:00",
+          "retrievedAt": "2026-11-07T14:49:10.942103+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202556750",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:26.600842+00:00",
+          "retrievedAt": "2026-11-07T14:49:10.942119+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202452905",
@@ -2119,38 +2079,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202452905",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:26.630808+00:00",
+          "retrievedAt": "2026-11-07T14:49:11.148300+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W4404988199",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:26.717504+00:00",
+          "retrievedAt": "2026-11-07T14:49:11.296723+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202452905",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:26.717521+00:00",
+          "retrievedAt": "2026-11-07T14:49:11.296742+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1103/tzt1-khk6",
@@ -2250,38 +2208,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1103/tzt1-khk6",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:27.304373+00:00",
+          "retrievedAt": "2026-11-07T14:49:11.543075+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7165629295",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:27.425852+00:00",
+          "retrievedAt": "2026-11-07T14:49:11.862571+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://arxiv.org/abs/2606.22759",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:27.425869+00:00",
+          "retrievedAt": "2026-11-07T14:49:11.862590+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
-        "title": false,
+        "doi": true,
+        "title": true,
         "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "title mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1103/qbss-wkz7",
@@ -2317,21 +2273,21 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1103/qbss-wkz7",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:27.450902+00:00",
+          "retrievedAt": "2026-11-07T14:49:11.983769+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7163044961",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:27.528709+00:00",
+          "retrievedAt": "2026-11-07T14:49:12.126422+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://arxiv.org/abs/2605.31342",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:27.528724+00:00",
+          "retrievedAt": "2026-11-07T14:49:12.126438+00:00",
           "version": "open_access_location"
         }
       ],
@@ -2378,21 +2334,21 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1103/h2lm-whld",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:27.557404+00:00",
+          "retrievedAt": "2026-11-07T14:49:12.299866+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7167919636",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:27.640675+00:00",
+          "retrievedAt": "2026-11-07T14:49:12.454092+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://arxiv.org/abs/2607.07797",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:27.640692+00:00",
+          "retrievedAt": "2026-11-07T14:49:12.454110+00:00",
           "version": "open_access_location"
         }
       ],
@@ -2507,38 +2463,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1103/gn45-7lpx",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:27.669366+00:00",
+          "retrievedAt": "2026-11-07T14:49:12.628856+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7216299949",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:27.751279+00:00",
+          "retrievedAt": "2026-11-07T14:49:12.815697+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://arxiv.org/abs/2610.07579",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:27.751296+00:00",
+          "retrievedAt": "2026-11-07T14:49:12.815715+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
-        "title": false,
+        "doi": true,
+        "title": true,
         "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "title mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1103/5w12-tbm8",
@@ -2638,38 +2592,36 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1103/5w12-tbm8",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:27.835199+00:00",
+          "retrievedAt": "2026-11-07T14:49:13.133736+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7202257331",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:28.044021+00:00",
+          "retrievedAt": "2026-11-07T14:49:13.762048+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1103/5w12-tbm8",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:28.044039+00:00",
+          "retrievedAt": "2026-11-07T14:49:13.762067+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
-        "title": false,
+        "doi": true,
+        "title": true,
         "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "title mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     },
     {
       "doi": "10.1051/0004-6361/202661804",
@@ -2713,44 +2665,42 @@
           "type": "publisher_abstract",
           "url": "https://doi.org/10.1051/0004-6361/202661804",
           "locator": "publisher DOI landing page",
-          "retrievedAt": "2026-11-07T14:42:28.069733+00:00",
+          "retrievedAt": "2026-11-07T14:49:13.890896+00:00",
           "version": "published_record"
         },
         {
           "type": "publisher_abstract",
           "url": "https://openalex.org/W7225259017",
           "locator": "OpenAlex abstract_inverted_index (reconstructed)",
-          "retrievedAt": "2026-11-07T14:42:28.150036+00:00",
+          "retrievedAt": "2026-11-07T14:49:14.066320+00:00",
           "version": "metadata"
         },
         {
           "type": "full_text",
           "url": "https://doi.org/10.1051/0004-6361/202661804",
           "locator": "OpenAlex OA location; content not fully validated",
-          "retrievedAt": "2026-11-07T14:42:28.150053+00:00",
+          "retrievedAt": "2026-11-07T14:49:14.066336+00:00",
           "version": "open_access_location"
         }
       ],
       "verifiedFields": {
-        "doi": false,
+        "doi": true,
         "title": true,
-        "journal": false,
+        "journal": true,
         "publicationYear": true
       },
-      "verificationErrors": [
-        "journal mismatch"
-      ],
+      "verificationErrors": [],
       "limitations": [
         "Not a substitute for full-text scientific review.",
         "Third-party abstracts are for editorial review, not republication."
       ],
-      "editorialStatus": "unverified"
+      "editorialStatus": "ready_for_editor"
     }
   ],
   "statistics": {
-    "doiVerified": 6,
+    "doiVerified": 30,
     "abstractAvailable": 30,
     "fullTextAvailable": 26,
-    "unverified": 24
+    "unverified": 0
   }
 }
