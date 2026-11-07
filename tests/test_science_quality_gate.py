@@ -57,6 +57,11 @@ class QualityGateTests(unittest.TestCase):
             with self.assertRaises(gate.GateError): gate.validate(self.draft([article()]),Path(tmp))
 
     @patch.object(gate.urllib.request,"urlopen")
+    def test_journal_substring_counterexample_is_rejected(self,m):
+        m.return_value=FakeResponse(crossref_message(**{"container-title":["Other Journal"]}))
+        with self.assertRaises(gate.GateError): gate.validate(self.draft([article()]),Path("/tmp/no-editions"))
+
+    @patch.object(gate.urllib.request,"urlopen")
     def test_unreviewed_status_is_rejected(self,m):
         m.return_value=FakeResponse(crossref_message())
         with self.assertRaises(gate.GateError): gate.validate(self.draft([article(status="Needs More Evidence")]),Path("/tmp/no-editions"))
