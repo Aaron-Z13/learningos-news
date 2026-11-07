@@ -2,6 +2,12 @@ name: Science Collector V1
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *' # 每日 UTC 09:00，即北京时间 17:00（GitHub Actions 可能延迟）
+
+concurrency:
+  group: science-pipeline-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -283,5 +289,69 @@ jobs:
         with:
           name: science-candidates
           path: science-candidates.json
+          retention-days: 7
+          if-no-files-found: error
+
+  shortlist:
+    name: Shortlist current collector artifact
+    needs: collect
+    if: ${{ needs.collect.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download artifact from this collector run
+        uses: actions/download-artifact@v4
+        with:
+          name: science-candidates
+          path: .
+
+      - name: Run Research Shortlisting
+        env:
+          OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}
+        run: |
+          set -euo pipefail
+          python3 scripts/science_shortlist.py --input science-candidates.json --output science-shortlist.json
+
+      - name: Write pipeline run metadata
+        env:
+          COLLECTOR_RUN_ID: ${{ github.run_id }}
+          COLLECTOR_RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+          shortlist = json.loads(Path("science-shortlist.json").read_text(encoding="utf-8"))
+          metadata = {
+              "collectorRunId": "$COLLECTOR_RUN_ID",
+              "collectorRunAttempt": "$COLLECTOR_RUN_ATTEMPT",
+              "shortlistRunId": "$COLLECTOR_RUN_ID",
+              "generatedAt": datetime.now(timezone.utc).isoformat(),
+              "collectorCollectedAt": shortlist.get("source", {}).get("collectorCollectedAt"),
+              "collectorStatus": shortlist.get("source", {}).get("collectorStatus"),
+              "candidateCount": shortlist.get("source", {}).get("collectorCount"),
+              "shortlistCount": shortlist.get("statistics", {}).get("selected"),
+              "abstractFetchRate": shortlist.get("statistics", {}).get("abstractFetchRate"),
+              "sourceErrors": shortlist.get("statistics", {}).get("sourceErrors", []),
+          }
+          Path("science-shortlist-run.json").write_text(
+              json.dumps(metadata, ensure_ascii=False, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(metadata, ensure_ascii=False))
+          PY
+
+      - name: Upload shortlist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: science-shortlist
+          path: |
+            science-shortlist.json
+            science-shortlist-run.json
           retention-days: 7
           if-no-files-found: error
