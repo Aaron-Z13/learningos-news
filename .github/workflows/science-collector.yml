@@ -1,4 +1,3 @@
-
 name: Science Collector V1
 
 on:
@@ -10,190 +9,214 @@ permissions:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Collect research candidates
+        env:
+          CROSSREF_EMAIL: ${{ secrets.CROSSREF_EMAIL }}
         run: |
           python3 - <<'PY'
           import json
+          import os
+          import random
           import time
+          import urllib.error
           import urllib.parse
           import urllib.request
           from datetime import datetime, timedelta, timezone
 
-          journals = {
-              "physics": [
-                  "Physical Review Letters",
-                  "Nature Physics"
+          # Verified publisher/ISSN registry. Online ISSNs are used for
+          # Crossref's exact /journals/{issn}/works endpoint.
+          JOURNALS = {
+              "Physics": [
+                  {"title": "Physical Review Letters", "issn": "1079-7114"},
+                  {"title": "Nature Physics", "issn": "1745-2481"},
               ],
-              "biology": [
-                  "Cell",
-                  "Nature Genetics"
+              "Biology": [
+                  {"title": "Cell", "issn": "1097-4172"},
+                  {"title": "Nature Genetics", "issn": "1546-1718"},
               ],
-              "chemistry": [
-                  "Nature Chemistry",
-                  "Journal of the American Chemical Society"
+              "Chemistry": [
+                  {"title": "Nature Chemistry", "issn": "1755-4333"},
+                  {"title": "Journal of the American Chemical Society", "issn": "1520-5126"},
               ],
-              "astronomy": [
-                  "Nature Astronomy",
-                  "Astronomy & Astrophysics"
+              "Astronomy": [
+                  {"title": "Nature Astronomy", "issn": "2397-3366"},
+                  {"title": "Astronomy & Astrophysics", "issn": "1432-0746"},
               ],
-              "computer_science": [
-                  "ACM Computing Surveys",
-                  "IEEE Transactions on Pattern Analysis and Machine Intelligence"
-              ]
+              "Computer Science": [
+                  {"title": "ACM Computing Surveys", "issn": "1557-7341"},
+                  {"title": "IEEE Transactions on Pattern Analysis and Machine Intelligence", "issn": "1939-3539"},
+              ],
           }
 
+          WINDOW_DAYS = 14
+          ROWS = 100
+          REQUEST_INTERVAL_SECONDS = 1.0
+          MAX_RETRIES = 4
+          RETRYABLE_STATUS = {429, 500, 502, 503, 504}
           now = datetime.now(timezone.utc)
-          start = (now - timedelta(days=14)).date()
-          end = now.date()
-
+          start_date = (now - timedelta(days=WINDOW_DAYS)).date()
+          end_date = now.date()
+          next_request_at = 0.0
           candidates = []
           seen_dois = set()
-          errors = []
+          journal_stats = []
+          source_errors = []
 
-          for subject, titles in journals.items():
-              for journal in titles:
-                  params = {
-                      "query.container-title": journal,
-                      "filter": (
-                          f"from-pub-date:{start},"
-                          f"until-pub-date:{end},"
-                          "type:journal-article"
-                      ),
-                      "rows": 20,
-                      "sort": "published",
-                      "order": "desc"
-                  }
+          def throttle():
+              global next_request_at
+              delay = next_request_at - time.monotonic()
+              if delay > 0:
+                  time.sleep(delay)
+              next_request_at = time.monotonic() + REQUEST_INTERVAL_SECONDS
 
-                  url = (
-                      "https://api.crossref.org/works?"
-                      + urllib.parse.urlencode(params)
-                  )
+          def retry_after(headers):
+              value = headers.get("Retry-After")
+              try:
+                  return max(0.0, float(value)) if value else 0.0
+              except ValueError:
+                  return 0.0
 
-                  request = urllib.request.Request(
-                      url,
-                      headers={
-                          "User-Agent": "LearningOS-News/0.2",
-                          "Accept": "application/json"
-                      }
-                  )
-
-                  try:
-                      with urllib.request.urlopen(
-                          request, timeout=30
-                      ) as response:
-                          records = json.load(response)["message"]["items"]
-                  except Exception as exc:
-                      errors.append({
-                          "journal": journal,
-                          "error": str(exc)
-                      })
-                      print("FAILED:", journal, exc)
-                      continue
-
-                  count = 0
-
-                  for item in records:
-                      actual_journals = item.get(
-                          "container-title", []
-                      )
-
-                      # Crossref journal searches can be fuzzy.
-                      if not any(
-                          name.strip().casefold() == journal.casefold()
-                          for name in actual_journals
-                      ):
-                          continue
-
-                      doi = item.get("DOI", "").strip()
-                      titles_found = item.get("title", [])
-
-                      if not doi or not titles_found:
-                          continue
-
-                      key = doi.casefold()
-
-                      if key in seen_dois:
-                          continue
-
-                      parts = item.get(
-                          "published", {}
-                      ).get("date-parts", [[]])[0]
-
-                      publication_date = "-".join(
-                          str(p).zfill(2) if i else str(p)
-                          for i, p in enumerate(parts)
-                      )
-
-                      candidates.append({
-                          "id": key,
-                          "subject": subject,
-                          "title": titles_found[0],
-                          "journal": journal,
-                          "doi": doi,
-                          "publicationDate": publication_date,
-                          "url": item.get(
-                              "URL", f"https://doi.org/{doi}"
-                          ),
-                          "publisher": item.get("publisher"),
-                          "recordType": item.get("type"),
-                          "source": "Crossref",
-                          "reviewStatus": "pending",
-                          "importanceScore": None
-                      })
-
-                      seen_dois.add(key)
-                      count += 1
-
-                  print(subject, journal, count)
-                  time.sleep(0.5)
-
-          if errors:
-              print("Source errors:", len(errors))
-
-          if not candidates:
-              raise RuntimeError(
-                  "No candidates collected. Check sources and filters."
+          def fetch_works(issn):
+              params = {
+                  "filter": f"from-pub-date:{start_date},until-pub-date:{end_date},type:journal-article",
+                  "rows": ROWS,
+                  "sort": "published",
+                  "order": "desc",
+              }
+              email = os.environ.get("CROSSREF_EMAIL", "").strip()
+              if email:
+                  params["mailto"] = email
+              url = "https://api.crossref.org/journals/" + issn + "/works?" + urllib.parse.urlencode(params)
+              request = urllib.request.Request(
+                  url,
+                  headers={
+                      "User-Agent": "LearningOS-News/1.0 (Crossref journal collector)",
+                      "Accept": "application/json",
+                  },
               )
+              last_error = None
+              for attempt in range(MAX_RETRIES + 1):
+                  throttle()
+                  try:
+                      with urllib.request.urlopen(request, timeout=30) as response:
+                          return json.load(response)["message"]["items"], attempt + 1
+                  except urllib.error.HTTPError as exc:
+                      last_error = f"HTTP {exc.code}: {exc.reason}"
+                      if exc.code not in RETRYABLE_STATUS or attempt >= MAX_RETRIES:
+                          raise RuntimeError(last_error)
+                      wait = retry_after(exc.headers) or min(60.0, 2 ** attempt + random.random())
+                      print(f"RETRY {issn} attempt={attempt + 1} wait={wait:.1f}s reason={last_error}")
+                      time.sleep(wait)
+                  except (urllib.error.URLError, TimeoutError) as exc:
+                      last_error = f"{type(exc).__name__}: {exc}"
+                      if attempt >= MAX_RETRIES:
+                          raise RuntimeError(last_error)
+                      wait = min(60.0, 2 ** attempt + random.random())
+                      print(f"RETRY {issn} attempt={attempt + 1} wait={wait:.1f}s reason={last_error}")
+                      time.sleep(wait)
+              raise RuntimeError(last_error or "unknown request failure")
 
-          # If a source failed, do not treat this as
-          # a complete collection.
+          def date_from_parts(container):
+              parts = container.get("date-parts", [[]])[0]
+              if not parts:
+                  return None
+              return "-".join(str(part).zfill(2) if index else str(part) for index, part in enumerate(parts))
+
+          def publication_date(item):
+              for field in ("published-online", "published-print", "published", "issued", "created"):
+                  value = date_from_parts(item.get(field, {}))
+                  if value:
+                      return value, field
+              return None, None
+
+          for subject, journals in JOURNALS.items():
+              for journal in journals:
+                  stat = {
+                      "subject": subject,
+                      "journal": journal["title"],
+                      "issn": journal["issn"],
+                      "returnedCount": 0,
+                      "filteredCount": 0,
+                      "duplicateCount": 0,
+                      "attempts": 0,
+                      "error": None,
+                  }
+                  try:
+                      records, stat["attempts"] = fetch_works(journal["issn"])
+                      stat["returnedCount"] = len(records)
+                      for item in records:
+                          publication_date, date_field = publication_date(item)
+                          if not publication_date:
+                              continue
+                          try:
+                              selected_date = datetime.fromisoformat(publication_date).date()
+                          except ValueError:
+                              continue
+                          if selected_date < start_date or selected_date > end_date:
+                              continue
+                          dois = item.get("DOI", "").strip()
+                          title = (item.get("title") or [""])[0].strip()
+                          if not dois or not title:
+                              continue
+                          doi_key = dois.casefold()
+                          if doi_key in seen_dois:
+                              stat["duplicateCount"] += 1
+                              continue
+                          stat["filteredCount"] += 1
+                          seen_dois.add(doi_key)
+                          candidates.append({
+                              "id": doi_key,
+                              "subject": subject,
+                              "title": title,
+                              "journal": journal["title"],
+                              "issn": journal["issn"],
+                              "doi": dois,
+                              "publicationDate": publication_date,
+                              "publicationDateField": date_field,
+                              "url": item.get("URL", f"https://doi.org/{dois}"),
+                              "publisher": item.get("publisher"),
+                              "recordType": item.get("type"),
+                              "source": "Crossref",
+                              "reviewStatus": "pending",
+                              "importanceScore": None,
+                          })
+                  except Exception as exc:
+                      stat["error"] = str(exc)
+                      source_errors.append({
+                          "subject": subject,
+                          "journal": journal["title"],
+                          "issn": journal["issn"],
+                          "error": str(exc),
+                          "attempts": stat["attempts"],
+                      })
+                      print(f"FAILED {subject} / {journal['title']} ({journal['issn']}): {exc}")
+                  journal_stats.append(stat)
+                  print(json.dumps(stat, ensure_ascii=False))
+
+          subject_counts = {
+              subject: sum(p["subject"] == subject for p in candidates)
+              for subject in JOURNALS
+          }
           output = {
               "schemaVersion": "1.0",
               "kind": "research_candidate_pool",
-              "status": "partial" if errors else "complete",
+              "status": "partial" if source_errors else "complete",
               "collectedAt": now.isoformat(),
-              "window": {
-                  "from": str(start),
-                  "to": str(end)
-              },
+              "window": {"from": str(start_date), "to": str(end_date), "days": WINDOW_DAYS},
               "count": len(candidates),
-              "sourceErrors": errors,
-              "papers": candidates
+              "subjectCounts": subject_counts,
+              "journalStats": journal_stats,
+              "sourceErrors": source_errors,
+              "papers": candidates,
           }
-
-          with open(
-              "science-candidates.json",
-              "w",
-              encoding="utf-8"
-          ) as f:
-              json.dump(
-                  output, f,
-                  ensure_ascii=False,
-                  indent=2
-              )
-
+          with open("science-candidates.json", "w", encoding="utf-8") as file:
+              json.dump(output, file, ensure_ascii=False, indent=2)
+          print("Subject counts:", json.dumps(subject_counts, ensure_ascii=False))
           print("Total candidates:", len(candidates))
-          print("Subject distribution:")
-
-          for subject in journals:
-              n = sum(
-                  p["subject"] == subject
-                  for p in candidates
-              )
-              print(subject, n)
+          print("Status:", output["status"])
 
           PY
 
