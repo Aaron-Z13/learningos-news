@@ -1,0 +1,41 @@
+name: Science Shortlisting V1
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  shortlist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download latest successful collector artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          run_id="$(gh run list --workflow science-collector.yml --status success --limit 1 --json databaseId --jq '.[0].databaseId')"
+          if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
+            echo "No successful Science Collector run found" >&2
+            exit 1
+          fi
+          gh run download "$run_id" --name science-candidates --dir .
+
+      - name: Run explainable research shortlisting
+        run: |
+          python3 scripts/science_shortlist.py             --input science-candidates.json             --output science-shortlist.json
+
+      - name: Upload shortlist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: science-shortlist
+          path: science-shortlist.json
+          retention-days: 7
+          if-no-files-found: error
