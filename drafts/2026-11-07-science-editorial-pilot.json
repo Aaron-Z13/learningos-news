@@ -1,0 +1,144 @@
+{
+  "schemaVersion": "1.0",
+  "editionId": "science-editorial-pilot-2026-11-07",
+  "title": "THE DAILY · Science Editorial Pilot",
+  "category": "science",
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "publishedAt": "2026-11-07T18:40:10+08:00",
+  "updatedAt": "2026-11-07T18:40:10+08:00",
+  "articles": [
+    {
+      "id": "science-pilot-ds-kstar-2026-11-07-001",
+      "section": "Physics",
+      "title": "BESIII首次测量 Dₛ⁺→K*(892)⁰μ⁺νμ 衰变并检验轻子味普适性",
+      "summary": "BESIII 报告了 Dₛ⁺→K*(892)⁰μ⁺νμ 的首次测量，并用 7.33 fb⁻¹ 的正负电子碰撞数据比较电子与缪子道。摘要报告两种道的分支比相近，未发现轻子味普适性偏离；完整论文和统计系统误差仍需进一步核对。",
+      "content": [
+        "这项工作关注含粲介子的半轻子衰变。电子和缪子道的比较，是检验标准模型轻子味普适性的一种方式；但单个衰变道的测量还要同时处理探测效率、背景和强子形状因子等问题。",
+        "论文摘要称，BESIII 使用 7.33 fb⁻¹、质心能量 4.128–4.226 GeV 的数据，报告 Dₛ⁺→K*(892)⁰μ⁺νμ 分支比为 (2.07±0.22_stat±0.10_syst)×10⁻³，电子道改进测量为 (2.14±0.18_stat±0.10_syst)×10⁻³。摘要还称，未在完整或分段 q² 区间观察到轻子味普适性破坏。",
+        "编辑判断：这是可核查的实验测量，数字和数据样本在 APS 摘要页可见，但目前仍主要依据 Accepted Paper 摘要，尚未完成全文方法和系统误差表的独立复核。因此适合进入“需要更多证据”队列，不宜写成发现新物理。",
+        "局限：当前资料不能替代对完整论文的复核；“未发现偏离”不等于证明标准模型在所有精度下成立，测量精度和理论输入仍决定结论边界。"
+      ],
+      "tags": [
+        "科学",
+        "物理学",
+        "BESIII",
+        "粒子物理",
+        "轻子味普适性"
+      ],
+      "publishedAt": "2026-11-07T18:40:10+08:00",
+      "updatedAt": "2026-11-07T18:40:10+08:00",
+      "sources": [
+        {
+          "title": "Physical Review Letters 原始摘要页",
+          "url": "https://journals.aps.org/prl/accepted/10.1103/flqh-zxzr"
+        },
+        {
+          "title": "DOI 原始链接",
+          "url": "https://doi.org/10.1103/flqh-zxzr"
+        }
+      ],
+      "doi": "10.1103/flqh-zxzr",
+      "paperPublicationDate": "2026-11-04",
+      "paperPublicationDateField": "published-online",
+      "originalTitle": "First measurement of the D s + → K * ( 892 ) 0 μ + ν μ decay, study of dynamics and test of lepton universality with D s + → K * ( 892 ) 0 ℓ + ν ℓ decays"
+    },
+    {
+      "id": "science-pilot-sulfate-radical-2026-11-07-001",
+      "section": "Chemistry",
+      "title": "一种电化学方法用于检测水相硫酸根自由基",
+      "summary": "JACS 论文提出氧化还原活性自旋捕获方法，用于检测、定量和分析水相硫酸根自由基的动力学。摘要支持其为方法学研究，但性能边界和真实体系适用性仍需查看全文与补充数据。",
+      "content": [
+        "硫酸根自由基是合成化学和环境化学中的重要中间体，但寿命短、反应性高，使直接定量困难。研究者通常借助自旋捕获剂延长信号寿命，不过捕获产物的稳定性和选择性会影响结果。",
+        "候选摘要显示，作者提出一种氧化还原活性自旋捕获策略，并将其用于硫酸根自由基的检测、定量和动力学分析。摘要强调方法针对传统 DMPO 捕获体系中的限制，但没有在当前资料中给出完整的检出限、误差范围或复杂环境样品验证。",
+        "编辑判断：研究问题明确，潜在应用横跨电化学、环境过程和自由基反应动力学；但证据目前仅来自 OpenAlex 转录摘要，无法独立确认实验设计和比较基线。",
+        "局限：尚未核查全文、补充信息和原始数据，不能据此声称该方法已优于现有技术或可直接用于现场监测。"
+      ],
+      "tags": [
+        "科学",
+        "化学",
+        "自由基",
+        "电化学",
+        "分析方法"
+      ],
+      "publishedAt": "2026-11-07T18:40:10+08:00",
+      "updatedAt": "2026-11-07T18:40:10+08:00",
+      "sources": [
+        {
+          "title": "ACS Publications DOI 页面",
+          "url": "https://doi.org/10.1021/jacs.6c14240"
+        },
+        {
+          "title": "Crossref/OpenAlex 候选来源",
+          "url": "https://api.openalex.org/works/https://doi.org/10.1021/jacs.6c14240"
+        }
+      ],
+      "doi": "10.1021/jacs.6c14240",
+      "paperPublicationDate": "2026-11-06",
+      "paperPublicationDateField": "published-online",
+      "originalTitle": "Redox-Active Spin Trapping for the Electrochemical Detection, Quantification, and Kinetic Analysis of Sulfate Radicals in Aqueous Media"
+    },
+    {
+      "id": "science-pilot-hncoh-2026-11-07-001",
+      "section": "Astronomy",
+      "title": "星际介质中检测到 HNCOH⁺：含异氰酸基分子的化学线索",
+      "summary": "Astronomy & Astrophysics 候选论文报告在星际介质中检测 HNCOH⁺ 的证据。该结果可能帮助约束星际含氮氧分子的形成路径，但当前仅有摘要资料，分子线识别和显著性需要查看原文。",
+      "content": [
+        "星际介质中的分子谱线记录了恒星和行星形成环境的化学条件。含异氰酸基的分子与肽键化学存在结构联系，因此新分子的可靠识别可以为星际化学网络提供约束。",
+        "摘要称，HNCOH⁺ 是此前理论预测的 O-质子化异构体，论文报告了在星际介质中的检测，并讨论其丰度与化学形成路径。现有资料没有足够信息让编辑独立复核使用的望远镜、谱线转动常数、信噪比和替代解释。",
+        "编辑判断：题目具有清晰的观测化学问题，若谱线归属经过多条转动跃迁和独立模型验证，报道价值较高；目前应标为 Needs More Evidence。",
+        "局限：不能仅凭摘要写成“发现生命前体”或“证明肽键在太空形成”；还需核对谱线混淆、模型假设和统计显著性。"
+      ],
+      "tags": [
+        "科学",
+        "天文学",
+        "星际介质",
+        "分子天文学",
+        "观测化学"
+      ],
+      "publishedAt": "2026-11-07T18:40:10+08:00",
+      "updatedAt": "2026-11-07T18:40:10+08:00",
+      "sources": [
+        {
+          "title": "Astronomy & Astrophysics DOI 原始链接",
+          "url": "https://doi.org/10.1051/0004-6361/202661485"
+        }
+      ],
+      "doi": "10.1051/0004-6361/202661485",
+      "paperPublicationDate": "2026-11-06",
+      "paperPublicationDateField": "published-online",
+      "originalTitle": "Detection of HNCOH+ in the interstellar medium"
+    },
+    {
+      "id": "science-pilot-chexmate-lensing-2026-11-07-001",
+      "section": "Astronomy",
+      "title": "CHEX-MATE 对 41 个星系团开展弱引力透镜分析",
+      "summary": "CHEX-MATE 研究使用 Subaru 和 CFHT 成像，对 41 个由普朗克 Sunyaev–Zel’dovich 效应选出的星系团进行弱引力透镜剪切分析。研究可为星系团质量分布研究提供数据，但其科学结论和系统误差需要全文核查。",
+      "content": [
+        "星系团是研究大尺度结构和暗物质分布的重要实验室。弱引力透镜通过背景光源形状的微小偏转，提供不依赖星系团气体状态的质量信息，但结果容易受到光源选择、剪切校准和中心定义影响。",
+        "候选摘要称，CHEX-MATE 团队分析了 41 个红移约 0.11–0.55 的 SZ 选星系团，使用 Subaru/Suprime-Cam 和 CFHT/MegaPrime 宽场成像，并围绕 X 射线峰测量方位平均弱透镜信号。",
+        "编辑判断：样本规模、观测设施和分析对象明确，适合作为数据型科学新闻候选；但摘要没有给出质量标定结果、与 X 射线或 SZ 质量的偏差，也不能单独支持宇宙学参数结论。",
+        "局限：目前无法确认完整样本选择、透镜效率校准和系统误差预算；正式发布前需要原文图表及项目数据说明。"
+      ],
+      "tags": [
+        "科学",
+        "天文学",
+        "弱引力透镜",
+        "星系团",
+        "观测宇宙学"
+      ],
+      "publishedAt": "2026-11-07T18:40:10+08:00",
+      "updatedAt": "2026-11-07T18:40:10+08:00",
+      "sources": [
+        {
+          "title": "Astronomy & Astrophysics DOI 原始链接",
+          "url": "https://doi.org/10.1051/0004-6361/202661961"
+        }
+      ],
+      "doi": "10.1051/0004-6361/202661961",
+      "paperPublicationDate": "2026-11-06",
+      "paperPublicationDateField": "published-online",
+      "originalTitle": "CHEX-MATE: AMALGAM weak-lensing analysis of 41 Planck Sunyaev–Zel’dovich-selected galaxy clusters"
+    }
+  ]
+}
