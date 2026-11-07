@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0",
+  "editionId": "2026-11-07-science-pilot",
+  "title": "Science Daily · 星际化学与星系团质量标定",
+  "category": "science",
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "publishedAt": "2026-11-07T20:00:52+08:00",
+  "updatedAt": "2026-11-07T20:00:52+08:00",
+  "articles": [
+    {
+      "id": "science-hncoh-2026-11-07-000",
+      "category": "science",
+      "section": "Astronomy",
+      "title": "星际空间发现此前难以捕捉的 HNCOH⁺ 分子",
+      "summary": "研究团队通过银河系中心分子云的深度谱线巡天，报告了此前难以捕捉的 HNCOH⁺ 分子。论文给出柱密度和相对丰度等观测推断；这一结果可约束星际化学路径，但不等同于证明生命起源。",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "研究团队在银河系中心分子云 G+0.693-0.027 的深度分子谱线巡天中寻找此前尚未被可靠识别的 O-质子化异构体 HNCOH+。这一问题属于分子天文学：不同异构体的丰度可以帮助约束星际气体中的反应路径。"
+        },
+        {
+          "type": "paragraph",
+          "text": "作者结合三台望远镜的宽带观测，报告了多条与 HNCOH+ 相符的谱线，并给出柱密度、相对 H2 丰度以及与 H2NCO+ 的比值。这里的“发现”是基于谱线归属和模型拟合的观测推断，不是对分子进行直接成像。"
+        },
+        {
+          "type": "paragraph",
+          "text": "结果的重要性在于扩展了星际介质中含异氰酸基分子的清单，也为比较异构体的动力学形成路径提供约束。论文还指出，异构体丰度不必简单服从热力学稳定性排序。"
+        },
+        {
+          "type": "paragraph",
+          "text": "局限包括谱线混淆排除、LTE拟合假设、分子丰度模型和化学网络不确定性。本文适合以观测结果和证据范围为中心报道，不应延伸为生命起源已被证明。"
+        }
+      ],
+      "tags": [
+        "科学",
+        "天文学",
+        "星际介质",
+        "分子天文学",
+        "观测化学"
+      ],
+      "publishedAt": "2026-11-07T20:00:52+08:00",
+      "updatedAt": "2026-11-07T20:00:52+08:00",
+      "sources": [
+        {
+          "title": "arXiv开放全文",
+          "url": "https://arxiv.org/abs/2610.39654"
+        },
+        {
+          "title": "A&A DOI",
+          "url": "https://doi.org/10.1051/0004-6361/202663271"
+        }
+      ],
+      "images": [],
+      "verificationStatus": "manual",
+      "doi": "10.1051/0004-6361/202663271",
+      "paperPublicationDate": "2026-11-06",
+      "paperPublicationDateField": "published-online",
+      "originalTitle": "Detection of HNCOH+ in the interstellar medium"
+    },
+    {
+      "id": "science-chexmate-2026-11-07-001",
+      "category": "science",
+      "section": "Astronomy",
+      "title": "弱引力透镜为41个星系团建立质量标定基线",
+      "summary": "CHEX-MATE 团队用弱引力透镜分析 41 个 Planck SZ 选星系团，并报告质量标定的统计结果和约 8% 的总系统不确定度。结论服务于样本和模型条件下的质量标定，不能外推为所有星系团的普遍常数。",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "星系团质量是连接观测和宇宙学模型的关键量。弱引力透镜通过背景星系形状的微小偏转估计前景质量，与依赖气体状态的X射线或SZ方法互补。"
+        },
+        {
+          "type": "paragraph",
+          "text": "CHEX-MATE团队分析了41个Planck SZ选出的星系团，使用Subaru/Suprime-Cam和CFHT/MegaPrime成像。论文报告每个星系团的方位平均弱透镜信号中位S/N为6.5，并以NFW模型拟合过量表面质量密度。"
+        },
+        {
+          "type": "paragraph",
+          "text": "研究估计弱透镜质量标定的总系统不确定度为8%。在特定质量和红移点，浓度参数c200为3.53±0.71；Planck SZ质量代理与M500的基准比值为0.83±0.09。作者将这些结果作为CHEX-MATE多探针质量标定的初始基线。"
+        },
+        {
+          "type": "paragraph",
+          "text": "这些数字描述的是样本和模型条件下的标定结果，不是对所有星系团的普遍常数。样本选择效应、透镜建模偏差、残余校准不确定度和质量代理回归形式仍会影响外推。"
+        }
+      ],
+      "tags": [
+        "科学",
+        "天文学",
+        "弱引力透镜",
+        "星系团",
+        "观测宇宙学"
+      ],
+      "publishedAt": "2026-11-07T20:00:52+08:00",
+      "updatedAt": "2026-11-07T20:00:52+08:00",
+      "sources": [
+        {
+          "title": "arXiv开放全文（v3）",
+          "url": "https://arxiv.org/abs/2606.24142"
+        },
+        {
+          "title": "A&A DOI",
+          "url": "https://doi.org/10.1051/0004-6361/202661961"
+        }
+      ],
+      "images": [],
+      "verificationStatus": "manual",
+      "doi": "10.1051/0004-6361/202661961",
+      "paperPublicationDate": "2026-11-06",
+      "paperPublicationDateField": "published-online",
+      "originalTitle": "CHEX-MATE: AMALGAM weak-lensing analysis of 41 Planck Sunyaev-Zel'dovich-selected galaxy clusters"
+    }
+  ]
+}
