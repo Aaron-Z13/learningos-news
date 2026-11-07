@@ -1,5 +1,11 @@
 name: Science Evidence Builder
 on:
+  push:
+    paths:
+      - 'scripts/science_evidence_builder.py'
+      - 'schemas/science-evidence.schema.json'
+      - 'tests/test_science_evidence_builder.py'
+      - '.github/workflows/science-evidence-builder.yml'
   workflow_dispatch:
     inputs:
       latest_url:
