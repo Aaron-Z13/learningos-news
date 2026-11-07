@@ -1,4 +1,3 @@
-
 {
   "schemaVersion": "1.0",
   "feedType": "learningos-news-manifest",
@@ -10,6 +9,12 @@
       "category": "science",
       "date": "2026-11-07",
       "url": "https://raw.githubusercontent.com/Aaron-Z13/learningos-news/main/editions/2026-11-07/science.json"
+    },
+    {
+      "id": "2026-11-07-science-subscription-e2e-test",
+      "category": "science",
+      "date": "2026-11-07",
+      "url": "https://raw.githubusercontent.com/Aaron-Z13/learningos-news/main/editions/2026-11-07/science-subscription-e2e-test.json"
     }
   ]
 }
