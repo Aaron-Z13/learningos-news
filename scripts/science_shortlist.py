@@ -200,7 +200,7 @@ def shortlist(payload, papers):
             paper = item["paper"]
             selected.append({
                 "doi": paper.get("doi"),
-                "title": paper.get("title"),
+                "title": normalize_title(paper.get("title")),
                 "titleOriginal": paper.get("titleOriginal") or paper.get("title"),
                 "journal": paper.get("journal"),
                 "subject": subject,
