@@ -73,7 +73,7 @@ def validate(draft, editions_dir):
     if not isinstance(arts,list) or not arts: raise GateError("没有文章")
     ids=set(); dois=set(); results=[]
     for a in arts:
-        for k in ("id","status","doi","title","journal","authors","paperPublicationDate","sources","evidence","body"):
+        for k in ("id","status","doi","title","originalTitle","journal","authors","paperPublicationDate","sources","evidence","body"):
             if k not in a: raise GateError(f"{a.get('id','unknown')}: 缺少字段 {k}")
         if a["status"]!="Ready": raise GateError(f"{a['id']}: 状态为 {a['status']}，禁止进入发布候选")
         if a["id"] in ids: raise GateError(f"重复文章ID: {a['id']}")
