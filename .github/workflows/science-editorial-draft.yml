@@ -32,7 +32,10 @@ jobs:
           schema=json.loads(Path("schemas/science-editorial-draft.schema.json").read_text())
           evidence="evidence/science/2026-11-07-run-42364875053-attempt-1.json"
           for p in Path("drafts/science/2026-11-07").glob("science-*.json"):
-              d=json.loads(p.read_text()); validate(d,schema)
+              d=json.loads(p.read_text())
+              if d.get("kind") != "science_editorial_draft":
+                  continue
+              validate(d,schema)
               subprocess.run(["python","scripts/science_editorial_pipeline.py","--evidence",evidence,"--review",str(p)],check=True)
           print("Drafts structurally valid; this is not independent scientific fact-checking.")
           PY
