@@ -1,0 +1,26 @@
+name: Science Editorial Quality Gate
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/science_quality_gate.py"
+      - "schemas/science-editorial-draft.schema.json"
+      - "tests/test_science_quality_gate.py"
+      - "drafts/2026-11-07-science-ready-candidates.json"
+
+permissions:
+  contents: read
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run deterministic unit tests
+        run: python3 -m unittest discover -s tests -p 'test_science_quality_gate.py' -v
+      - name: Run live integration gate for Ready candidates
+        run: |
+          python3 scripts/science_quality_gate.py             --draft drafts/2026-11-07-science-ready-candidates.json             --editions-dir editions             --output /tmp/science-quality-gate-result.json
+          cat /tmp/science-quality-gate-result.json
