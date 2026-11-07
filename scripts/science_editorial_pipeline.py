@@ -46,8 +46,7 @@ def demo(pkg,outdir):
   (outdir/(d["articleId"]+".json")).write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\\n")
 def main():
  ap=argparse.ArgumentParser(); ap.add_argument("--evidence",required=True); ap.add_argument("--selection-output"); ap.add_argument("--draft-dir"); ap.add_argument("--review"); a=ap.parse_args(); pkg=load(a.evidence)
- if a.selection_output: Path(a.selection_output).parent.mkdir(parents=True,exist_ok=True); Path(a.selection_output).write_text(json.dumps(select(pkg),ensure_ascii=False,indent=2)+"
-")
+ if a.selection_output: Path(a.selection_output).parent.mkdir(parents=True,exist_ok=True); Path(a.selection_output).write_text(json.dumps(select(pkg),ensure_ascii=False,indent=2)+"\\n")
  if a.draft_dir: demo(pkg,Path(a.draft_dir))
  if a.review:
   e=review(load(a.review),pkg); print(json.dumps({"valid":not e,"errors":e},ensure_ascii=False)); return 0 if not e else 1
