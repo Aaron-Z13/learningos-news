@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "editionId": "2026-11-07-science-subscription-e2e-test",
+  "title": "Science Daily · Manifest 增量同步测试",
+  "category": "science",
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "publishedAt": "2026-11-07T17:35:00+08:00",
+  "updatedAt": "2026-11-07T17:35:00+08:00",
+  "articles": [
+    {
+      "id": "science-subscription-e2e-test-001",
+      "category": "science",
+      "section": "同步验收测试",
+      "title": "测试文章：Manifest 增量同步验收",
+      "summary": "这是一篇仅用于验证 Manifest 增量同步、重复同步和远程清理流程的测试文章，不是正式科学新闻。",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "本文仅用于 LearningOS Daily News 端到端验收。测试结束后，远程 Manifest 将移除此 Edition；本地缓存是否保留由客户端既有策略决定。"
+        }
+      ],
+      "tags": [
+        "测试",
+        "Manifest",
+        "增量同步"
+      ],
+      "publishedAt": "2026-11-07T17:35:00+08:00",
+      "updatedAt": "2026-11-07T17:35:00+08:00",
+      "sources": [
+        {
+          "title": "LearningOS News Manifest E2E Test",
+          "url": "https://github.com/Aaron-Z13/learningos-news"
+        }
+      ],
+      "images": [],
+      "verificationStatus": "manual"
+    }
+  ]
+}
