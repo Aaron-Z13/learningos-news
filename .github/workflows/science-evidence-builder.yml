@@ -46,7 +46,10 @@ jobs:
           from pathlib import Path
           p=sorted(Path("evidence/science").glob("*.json"))[-1]
           d=json.loads(p.read_text())
-          from jsonschema import validate\n          schema=json.load(open("schemas/science-evidence.schema.json"))\n          validate(d, schema)\n          assert d["limits"]["paidApisUsed"] is False
+          from jsonschema import validate
+          schema=json.load(open("schemas/science-evidence.schema.json"))
+          validate(d, schema)
+          assert d["limits"]["paidApisUsed"] is False
           assert len(d["papers"]) <= 30
           assert int(d["source"]["runId"]) > 0 and int(d["source"]["runAttempt"]) > 0
           print(p)
