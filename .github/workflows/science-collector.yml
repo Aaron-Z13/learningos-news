@@ -1,0 +1,47 @@
+
+name: Science Collector Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-crossref:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Query Crossref API
+        run: |
+          python3 - <<'PY'
+          import json
+          import urllib.request
+
+          url = (
+              "https://api.crossref.org/works"
+              "?query.title=physics&rows=1"
+          )
+
+          request = urllib.request.Request(
+              url,
+              headers={
+                  "User-Agent": "LearningOS-News/0.1 (personal research project)",
+                  "Accept": "application/json"
+              }
+          )
+
+          with urllib.request.urlopen(request, timeout=20) as response:
+              data = json.load(response)
+
+          items = data["message"]["items"]
+          if not items:
+              raise RuntimeError("Crossref returned no results")
+
+          paper = items[0]
+          print("Crossref connection successful!")
+          print("Title:", paper.get("title", ["Unknown"])[0])
+          print("DOI:", paper.get("DOI", "Unknown"))
+          print("URL:", paper.get("URL", "Unknown"))
+          PY
