@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """Fail-closed quality gate for LearningOS science editorial drafts."""
 from __future__ import annotations
-import argparse, json, re, sys, urllib.error, urllib.request
+import argparse, html, json, re, sys, urllib.error, urllib.request
 from datetime import date
 from pathlib import Path
 
 STATUSES={"Draft","Needs More Evidence","Ready","Published","Rejected"}
 EVIDENCE_TYPES={"publisher_abstract","preprint_abstract","full_text","supplementary_information","institutional_copy"}
-JOURNAL_ALIASES={"physicalreviewletters":"physicalreviewletters","physrevlett":"physicalreviewletters","journalofamericanchemicalsociety":"journalofamericanchemicalsociety","jacs":"journalofamericanchemicalsociety","astronomyastrophysics":"astronomyastrophysics","aanda":"astronomyastrophysics"}
+JOURNAL_ALIASES={"physicalreviewletters":"physicalreviewletters","physrevlett":"physicalreviewletters","journalofamericanchemicalsociety":"journalofamericanchemicalsociety","jacs":"journalofamericanchemicalsociety","astronomyastrophysics":"astronomyastrophysics","astronomyampastrophysics":"astronomyastrophysics","aanda":"astronomyastrophysics"}
 
 def canonical_journal(value):
-    key=norm(value)
+    key=norm(html.unescape(str(value or "")))
     return JOURNAL_ALIASES.get(key,key)
 MAJOR_CLAIM=re.compile(r"(重大突破|首次证明|彻底解决|改变了?该领域|已证实治疗有效|证明了?生命起源)",re.I)
 
