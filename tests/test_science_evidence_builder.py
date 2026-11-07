@@ -15,6 +15,11 @@ class T(unittest.TestCase):
   cr={"DOI":"10.1234/test","title":["Other"],"container-title":["Other Journal"],"author":[],"published":{"date-parts":[[2025]]}}
   with patch.object(b,"crossref_record",return_value=cr),patch.object(b,"openalex_record",return_value=None):
    self.assertEqual(b.build(L,H)["papers"][0]["editorialStatus"],"unverified")
+ def test_metadata_format_differences_match(self):
+  cr={"DOI":"10.1234/test","title":["A Study: Results—A Review"],"container-title":["Astronomy & Astrophysics"],"author":[],"published":{"date-parts":[[2026,11,1]]},"URL":"https://doi.org/10.1234/test"}
+  h=dict(H);h["papers"]=[dict(H["papers"][0],title="A Study: Results-A Review",journal="Astronomy and Astrophysics")]
+  with patch.object(b,"crossref_record",return_value=cr),patch.object(b,"openalex_record",return_value=None):
+   self.assertEqual(b.build(dict(L,shortlistCount=1),dict(H, papers=h["papers"]))["papers"][0]["verificationErrors"],[])
  def test_abstract_not_fulltext(self):
   cr={"DOI":"10.1234/test","title":["A Study"],"container-title":["Journal"],"author":[],"published":{"date-parts":[[2026,11,1]]},"URL":"https://doi.org/10.1234/test"}
   with patch.object(b,"crossref_record",return_value=cr),patch.object(b,"openalex_record",return_value={"abstract_inverted_index":{"A":[0],"study":[1]},"locations":[]}):
