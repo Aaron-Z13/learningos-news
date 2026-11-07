@@ -72,6 +72,13 @@ def text(value):
     return str(value or "").strip()
 
 
+def normalize_title(value):
+    import html
+    value = html.unescape(text(value))
+    value = re.sub(r"<[^>]*>", "", value)
+    return re.sub(r"\s+", " ", value).strip()
+
+
 def abstract_info(paper):
     abstract = paper.get("abstract") or paper.get("abstractText")
     if abstract:
@@ -80,7 +87,7 @@ def abstract_info(paper):
 
 
 def classify_exclusion(paper):
-    title = text(paper.get("title"))
+    title = normalize_title(paper.get("title"))
     record_type = text(paper.get("recordType")).lower()
     if NON_RESEARCH_TITLE.search(title):
         return "标题含社论、勘误、新闻评论或撤稿等非研究性标记"
@@ -151,7 +158,7 @@ def shortlist(payload, papers):
     for paper in papers:
         exclusion = classify_exclusion(paper)
         if exclusion:
-            excluded.append({"doi": paper.get("doi"), "title": paper.get("title"), "reason": exclusion})
+            excluded.append({"doi": paper.get("doi"), "title": normalize_title(paper.get("title")), "reason": exclusion})
             continue
         score, reasons, questions, abstract = score_candidate(paper)
         item = {
