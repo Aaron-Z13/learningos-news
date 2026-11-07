@@ -60,7 +60,8 @@
         "作者结合三台望远镜的宽带观测，报告了多条与 HNCOH+ 相符的谱线，并给出柱密度、相对 H2 丰度以及与 H2NCO+ 的比值。这里的“发现”是基于谱线归属和模型拟合的观测推断，不是对分子进行直接成像。",
         "结果的重要性在于扩展了星际介质中含异氰酸基分子的清单，也为比较异构体的动力学形成路径提供约束。论文还指出，异构体丰度不必简单服从热力学稳定性排序。",
         "局限包括谱线混淆排除、LTE拟合假设、分子丰度模型和化学网络不确定性。本文适合以观测结果和证据范围为中心报道，不应延伸为生命起源已被证明。"
-      ]
+      ],
+      "originalTitle": "Detection of HNCOH+ in the interstellar medium"
     },
     {
       "id": "science-chexmate-2026-11-07",
@@ -118,7 +119,8 @@
         "CHEX-MATE团队分析了41个Planck SZ选出的星系团，使用Subaru/Suprime-Cam和CFHT/MegaPrime成像。论文报告每个星系团的方位平均弱透镜信号中位S/N为6.5，并以NFW模型拟合过量表面质量密度。",
         "研究估计弱透镜质量标定的总系统不确定度为8%。在特定质量和红移点，浓度参数c200为3.53±0.71；Planck SZ质量代理与M500的基准比值为0.83±0.09。作者将这些结果作为CHEX-MATE多探针质量标定的初始基线。",
         "这些数字描述的是样本和模型条件下的标定结果，不是对所有星系团的普遍常数。样本选择效应、透镜建模偏差、残余校准不确定度和质量代理回归形式仍会影响外推。"
-      ]
+      ],
+      "originalTitle": "CHEX-MATE: AMALGAM weak-lensing analysis of 41 Planck Sunyaev-Zel'dovich-selected galaxy clusters"
     }
   ]
 }
