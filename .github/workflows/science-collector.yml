@@ -1,5 +1,5 @@
 
-name: Science Collector Test
+name: Science Collector V1
 
 on:
   workflow_dispatch:
@@ -8,100 +8,169 @@ permissions:
   contents: read
 
 jobs:
-  collect-science:
+  collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
-      - name: Collect recent physics papers
+      - name: Collect research candidates
         run: |
           python3 - <<'PY'
           import json
+          import time
           import urllib.parse
           import urllib.request
           from datetime import datetime, timedelta, timezone
 
-          today = datetime.now(timezone.utc).date()
-          start = today - timedelta(days=7)
-
-          params = {
-              "query.bibliographic": "physics",
-              "filter": (
-                  f"from-pub-date:{start},"
-                  f"until-pub-date:{today}"
-              ),
-              "sort": "published",
-              "order": "desc",
-              "rows": "30",
-              "select": (
-                  "DOI,title,container-title,"
-                  "published,type,URL,publisher"
-              )
+          journals = {
+              "physics": [
+                  "Physical Review Letters",
+                  "Nature Physics"
+              ],
+              "biology": [
+                  "Cell",
+                  "Nature Genetics"
+              ],
+              "chemistry": [
+                  "Nature Chemistry",
+                  "Journal of the American Chemical Society"
+              ],
+              "astronomy": [
+                  "Nature Astronomy",
+                  "Astronomy & Astrophysics"
+              ],
+              "computer_science": [
+                  "ACM Computing Surveys",
+                  "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+              ]
           }
 
-          url = (
-              "https://api.crossref.org/works?"
-              + urllib.parse.urlencode(params)
-          )
-
-          request = urllib.request.Request(
-              url,
-              headers={
-                  "User-Agent": "LearningOS-News/0.1",
-                  "Accept": "application/json"
-              }
-          )
-
-          with urllib.request.urlopen(
-              request, timeout=30
-          ) as response:
-              data = json.load(response)
+          now = datetime.now(timezone.utc)
+          start = (now - timedelta(days=14)).date()
+          end = now.date()
 
           candidates = []
+          seen_dois = set()
+          errors = []
 
-          for item in data["message"]["items"]:
-              doi = item.get("DOI")
-              title = item.get("title", [""])
-              published = item.get("published", {})
-              parts = published.get("date-parts", [[]])
+          for subject, titles in journals.items():
+              for journal in titles:
+                  params = {
+                      "query.container-title": journal,
+                      "filter": (
+                          f"from-pub-date:{start},"
+                          f"until-pub-date:{end},"
+                          "type:journal-article"
+                      ),
+                      "rows": 20,
+                      "sort": "published",
+                      "order": "desc"
+                  }
 
-              if not doi or not title or not title[0]:
-                  continue
+                  url = (
+                      "https://api.crossref.org/works?"
+                      + urllib.parse.urlencode(params)
+                  )
 
-              date_parts = parts[0] if parts else []
-              publication_date = "-".join(
-                  str(value).zfill(2) if i else str(value)
-                  for i, value in enumerate(date_parts)
+                  request = urllib.request.Request(
+                      url,
+                      headers={
+                          "User-Agent": "LearningOS-News/0.2",
+                          "Accept": "application/json"
+                      }
+                  )
+
+                  try:
+                      with urllib.request.urlopen(
+                          request, timeout=30
+                      ) as response:
+                          records = json.load(response)["message"]["items"]
+                  except Exception as exc:
+                      errors.append({
+                          "journal": journal,
+                          "error": str(exc)
+                      })
+                      print("FAILED:", journal, exc)
+                      continue
+
+                  count = 0
+
+                  for item in records:
+                      actual_journals = item.get(
+                          "container-title", []
+                      )
+
+                      # Crossref journal searches can be fuzzy.
+                      if not any(
+                          name.strip().casefold() == journal.casefold()
+                          for name in actual_journals
+                      ):
+                          continue
+
+                      doi = item.get("DOI", "").strip()
+                      titles_found = item.get("title", [])
+
+                      if not doi or not titles_found:
+                          continue
+
+                      key = doi.casefold()
+
+                      if key in seen_dois:
+                          continue
+
+                      parts = item.get(
+                          "published", {}
+                      ).get("date-parts", [[]])[0]
+
+                      publication_date = "-".join(
+                          str(p).zfill(2) if i else str(p)
+                          for i, p in enumerate(parts)
+                      )
+
+                      candidates.append({
+                          "id": key,
+                          "subject": subject,
+                          "title": titles_found[0],
+                          "journal": journal,
+                          "doi": doi,
+                          "publicationDate": publication_date,
+                          "url": item.get(
+                              "URL", f"https://doi.org/{doi}"
+                          ),
+                          "publisher": item.get("publisher"),
+                          "recordType": item.get("type"),
+                          "source": "Crossref",
+                          "reviewStatus": "pending",
+                          "importanceScore": None
+                      })
+
+                      seen_dois.add(key)
+                      count += 1
+
+                  print(subject, journal, count)
+                  time.sleep(0.5)
+
+          if errors:
+              print("Source errors:", len(errors))
+
+          if not candidates:
+              raise RuntimeError(
+                  "No candidates collected. Check sources and filters."
               )
 
-              candidates.append({
-                  "title": title[0],
-                  "doi": doi,
-                  "journal": (
-                      item.get("container-title", [""])
-                      or [""]
-                  )[0],
-                  "publicationDate": publication_date,
-                  "publisher": item.get("publisher"),
-                  "type": item.get("type"),
-                  "url": item.get(
-                      "URL", f"https://doi.org/{doi}"
-                  ),
-                  "source": "Crossref",
-                  "reviewStatus": "not_reviewed"
-              })
-
+          # If a source failed, do not treat this as
+          # a complete collection.
           output = {
               "schemaVersion": "1.0",
-              "category": "science",
-              "status": "candidates_only",
-              "collectedAt": datetime.now(
-                  timezone.utc
-              ).isoformat(),
-              "query": "physics",
-              "dateFrom": str(start),
-              "dateTo": str(today),
+              "kind": "research_candidate_pool",
+              "status": "partial" if errors else "complete",
+              "collectedAt": now.isoformat(),
+              "window": {
+                  "from": str(start),
+                  "to": str(end)
+              },
               "count": len(candidates),
+              "sourceErrors": errors,
               "papers": candidates
           }
 
@@ -109,27 +178,29 @@ jobs:
               "science-candidates.json",
               "w",
               encoding="utf-8"
-          ) as file:
+          ) as f:
               json.dump(
-                  output, file,
+                  output, f,
                   ensure_ascii=False,
                   indent=2
               )
 
-          print("Collection complete")
-          print("Candidates:", len(candidates))
+          print("Total candidates:", len(candidates))
+          print("Subject distribution:")
 
-          for paper in candidates[:5]:
-              print("Title:", paper["title"])
-              print("DOI:", paper["doi"])
-              print("Date:", paper["publicationDate"])
-              print("---")
+          for subject in journals:
+              n = sum(
+                  p["subject"] == subject
+                  for p in candidates
+              )
+              print(subject, n)
+
           PY
 
-      - name: Upload candidates JSON
+      - name: Upload candidate pool
         uses: actions/upload-artifact@v4
         with:
           name: science-candidates
           path: science-candidates.json
-          if-no-files-found: error
           retention-days: 7
+          if-no-files-found: error
