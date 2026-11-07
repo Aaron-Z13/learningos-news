@@ -8,40 +8,128 @@ permissions:
   contents: read
 
 jobs:
-  test-crossref:
+  collect-science:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     steps:
-      - name: Query Crossref API
+      - name: Collect recent physics papers
         run: |
           python3 - <<'PY'
           import json
+          import urllib.parse
           import urllib.request
+          from datetime import datetime, timedelta, timezone
+
+          today = datetime.now(timezone.utc).date()
+          start = today - timedelta(days=7)
+
+          params = {
+              "query.bibliographic": "physics",
+              "filter": (
+                  f"from-pub-date:{start},"
+                  f"until-pub-date:{today}"
+              ),
+              "sort": "published",
+              "order": "desc",
+              "rows": "30",
+              "select": (
+                  "DOI,title,container-title,"
+                  "published,type,URL,publisher"
+              )
+          }
 
           url = (
-              "https://api.crossref.org/works"
-              "?query.title=physics&rows=1"
+              "https://api.crossref.org/works?"
+              + urllib.parse.urlencode(params)
           )
 
           request = urllib.request.Request(
               url,
               headers={
-                  "User-Agent": "LearningOS-News/0.1 (personal research project)",
+                  "User-Agent": "LearningOS-News/0.1",
                   "Accept": "application/json"
               }
           )
 
-          with urllib.request.urlopen(request, timeout=20) as response:
+          with urllib.request.urlopen(
+              request, timeout=30
+          ) as response:
               data = json.load(response)
 
-          items = data["message"]["items"]
-          if not items:
-              raise RuntimeError("Crossref returned no results")
+          candidates = []
 
-          paper = items[0]
-          print("Crossref connection successful!")
-          print("Title:", paper.get("title", ["Unknown"])[0])
-          print("DOI:", paper.get("DOI", "Unknown"))
-          print("URL:", paper.get("URL", "Unknown"))
+          for item in data["message"]["items"]:
+              doi = item.get("DOI")
+              title = item.get("title", [""])
+              published = item.get("published", {})
+              parts = published.get("date-parts", [[]])
+
+              if not doi or not title or not title[0]:
+                  continue
+
+              date_parts = parts[0] if parts else []
+              publication_date = "-".join(
+                  str(value).zfill(2) if i else str(value)
+                  for i, value in enumerate(date_parts)
+              )
+
+              candidates.append({
+                  "title": title[0],
+                  "doi": doi,
+                  "journal": (
+                      item.get("container-title", [""])
+                      or [""]
+                  )[0],
+                  "publicationDate": publication_date,
+                  "publisher": item.get("publisher"),
+                  "type": item.get("type"),
+                  "url": item.get(
+                      "URL", f"https://doi.org/{doi}"
+                  ),
+                  "source": "Crossref",
+                  "reviewStatus": "not_reviewed"
+              })
+
+          output = {
+              "schemaVersion": "1.0",
+              "category": "science",
+              "status": "candidates_only",
+              "collectedAt": datetime.now(
+                  timezone.utc
+              ).isoformat(),
+              "query": "physics",
+              "dateFrom": str(start),
+              "dateTo": str(today),
+              "count": len(candidates),
+              "papers": candidates
+          }
+
+          with open(
+              "science-candidates.json",
+              "w",
+              encoding="utf-8"
+          ) as file:
+              json.dump(
+                  output, file,
+                  ensure_ascii=False,
+                  indent=2
+              )
+
+          print("Collection complete")
+          print("Candidates:", len(candidates))
+
+          for paper in candidates[:5]:
+              print("Title:", paper["title"])
+              print("DOI:", paper["doi"])
+              print("Date:", paper["publicationDate"])
+              print("---")
           PY
+
+      - name: Upload candidates JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: science-candidates
+          path: science-candidates.json
+          if-no-files-found: error
+          retention-days: 7
