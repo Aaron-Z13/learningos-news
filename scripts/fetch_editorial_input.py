@@ -202,11 +202,51 @@ def main() -> int:
         runs = list_successful_runs(args.repo)
         with tempfile.TemporaryDirectory(prefix="learningos-science-handoff-") as temp:
             root = Path(temp)
-            candidates = []
+            todays_runs = []
             for run in runs:
                 try:
                     run_date = local_date_from_iso(str(run.get("createdAt", "")))
                 except HandoffError:
+                    continue
+                if run_date == target_date:
+                    todays_runs.append(run)
+
+            if not todays_runs:
+                raise HandoffError("无可用编辑资料")
+
+            # gh returns newest runs first. Never fall back to an older run if
+            # the latest successful run is incomplete or mismatched.
+            run = todays_runs[0]
+            run_dir = root / str(run.get("databaseId"))
+            run_dir.mkdir()
+            shortlist_path, metadata_path = download_shortlist(
+                args.repo, int(run["databaseId"]), run_dir
+            )
+            shortlist = load_json(shortlist_path, "science-shortlist.json")
+            metadata = load_json(metadata_path, "science-shortlist-run.json")
+            handoff = validate_handoff(run, shortlist, metadata, target_date)
+            handoff["repository"] = args.repo
+            handoff["generatedAt"] = datetime.now(TIMEZONE).isoformat()
+
+            Path(args.output).write_text(
+                json.dumps(handoff, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            print(
+                json.dumps(
+                    {
+                        "status": "ready",
+                        "output": args.output,
+                        "runId": handoff["sourceRun"]["runId"],
+                        "candidateCount": handoff["collection"]["candidateCount"],
+                        "shortlistCount": handoff["shortlisting"]["selectedCount"],
+                        "abstractFetchRate": handoff["shortlisting"]["abstractFetchRate"],
+                    },
+                    ensure_ascii=False,
+                )
+            )
+            return 0
+    except HandoffError:
                     continue
                 if run_date != target_date:
                     continue
