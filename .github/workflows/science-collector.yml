@@ -298,6 +298,8 @@ jobs:
     if: ${{ needs.collect.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write
 
     steps:
       - name: Check out repository
@@ -358,6 +360,134 @@ jobs:
               encoding="utf-8",
           )
           print(json.dumps(metadata, ensure_ascii=False))
+          PY
+
+      - name: Publish validated editorial handoff
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PIPELINE_RUN_ID: ${{ github.run_id }}
+          PIPELINE_RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          from datetime import datetime
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          def positive_int(name):
+              raw = os.environ.get(name, "").strip()
+              try:
+                  value = int(raw)
+              except ValueError as exc:
+                  raise RuntimeError(f"{name} must be a positive integer") from exc
+              if value <= 0:
+                  raise RuntimeError(f"{name} must be a positive integer")
+              return value
+
+          run_id = positive_int("PIPELINE_RUN_ID")
+          run_attempt = positive_int("PIPELINE_RUN_ATTEMPT")
+          shortlist = json.loads(Path("science-shortlist.json").read_text(encoding="utf-8"))
+          metadata = json.loads(Path("science-shortlist-run.json").read_text(encoding="utf-8"))
+
+          if metadata.get("collectorRunId") != run_id or metadata.get("shortlistRunId") != run_id:
+              raise RuntimeError("shortlist metadata does not belong to this workflow run")
+          if metadata.get("collectorRunAttempt") != run_attempt:
+              raise RuntimeError("shortlist metadata Run Attempt does not match this workflow run")
+          source = shortlist.get("source") or {}
+          stats = shortlist.get("statistics") or {}
+          papers = shortlist.get("papers")
+          if source.get("collectorStatus") not in {"complete", "partial"}:
+              raise RuntimeError("collector status is not valid")
+          if not isinstance(papers, list):
+              raise RuntimeError("shortlist papers must be a list")
+          if stats.get("selected") != len(papers):
+              raise RuntimeError("shortlist selected count does not match papers")
+          candidate_count = source.get("collectorCount")
+          if not isinstance(candidate_count, int) or candidate_count < 0:
+              raise RuntimeError("collector candidate count is invalid")
+          abstract_rate = stats.get("abstractFetchRate")
+          if not isinstance(abstract_rate, (int, float)) or not 0 <= abstract_rate <= 1:
+              raise RuntimeError("abstract fetch rate is invalid")
+          collected_at = metadata.get("collectorCollectedAt")
+          if not isinstance(collected_at, str):
+              raise RuntimeError("collectorCollectedAt is missing")
+          local_date = datetime.fromisoformat(collected_at.replace("Z", "+00:00")).astimezone(
+              ZoneInfo("Asia/Shanghai")
+          ).date().isoformat()
+
+          editorial = {
+              "schemaVersion": "1.0",
+              "kind": "science_editorial_input",
+              "generatedAt": datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(),
+              "sourceRun": {
+                  "repository": os.environ.get("GITHUB_REPOSITORY"),
+                  "workflow": "science-collector.yml",
+                  "runId": run_id,
+                  "runAttempt": run_attempt,
+                  "collectorRunId": metadata["collectorRunId"],
+                  "collectorRunAttempt": metadata["collectorRunAttempt"],
+              },
+              "collection": {
+                  "date": local_date,
+                  "collectedAt": collected_at,
+                  "status": source["collectorStatus"],
+                  "candidateCount": candidate_count,
+              },
+              "shortlisting": {
+                  "selectedCount": stats["selected"],
+                  "abstractFetchRate": abstract_rate,
+                  "sourceErrors": stats.get("sourceErrors", []),
+                  "bySubject": stats.get("bySubject", {}),
+                  "scoreDistribution": stats.get("scoreDistribution", {}),
+              },
+              "papers": papers,
+              "handoffNote": "仅供编辑审查；未生成、未发布新闻。",
+          }
+          output = Path(f"editorial-input/science/{local_date}-run-{run_id}-attempt-{run_attempt}.json")
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_text(json.dumps(editorial, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+          latest = Path("editorial-input/science/latest.json")
+          update_latest = True
+          if latest.exists():
+              previous = json.loads(latest.read_text(encoding="utf-8"))
+              previous_key = (int(previous.get("runId", 0)), int(previous.get("runAttempt", 0)))
+              update_latest = (run_id, run_attempt) >= previous_key
+          if update_latest:
+              latest.write_text(json.dumps({
+                  "schemaVersion": "1.0",
+                  "kind": "science_editorial_input_index",
+                  "date": local_date,
+                  "runId": run_id,
+                  "runAttempt": run_attempt,
+                  "path": str(output),
+                  "candidateCount": candidate_count,
+                  "shortlistCount": stats["selected"],
+                  "abstractFetchRate": abstract_rate,
+              }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+          subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
+          subprocess.run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"], check=True)
+          subprocess.run(["git", "add", str(output), str(latest)], check=True)
+          changed = subprocess.run(["git", "diff", "--cached", "--quiet"], check=False).returncode != 0
+          if changed:
+              subprocess.run(["git", "commit", "-m", f"chore: publish science editorial input run {run_id}"], check=True)
+              subprocess.run(["git", "push"], check=True)
+          else:
+              print("Editorial handoff already published; no commit needed.")
+          print(json.dumps({
+              "path": str(output),
+              "latestUpdated": update_latest,
+              "runId": run_id,
+              "runAttempt": run_attempt,
+              "date": local_date,
+              "candidateCount": candidate_count,
+              "shortlistCount": stats["selected"],
+              "abstractFetchRate": abstract_rate,
+          }, ensure_ascii=False))
           PY
 
       - name: Upload shortlist artifact
