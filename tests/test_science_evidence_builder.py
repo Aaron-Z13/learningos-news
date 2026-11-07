@@ -25,3 +25,4 @@ class T(unittest.TestCase):
   with patch.object(b,"crossref_record",return_value=cr),patch.object(b,"openalex_record",return_value={"abstract_inverted_index":{"A":[0],"study":[1]},"locations":[]}):
    p=b.build(L,H)["papers"][0];self.assertEqual(p["abstract"],"A study");self.assertFalse(p["fullTextAvailable"])
 if __name__=="__main__":unittest.main()
+
