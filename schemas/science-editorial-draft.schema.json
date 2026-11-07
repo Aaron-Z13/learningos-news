@@ -13,12 +13,13 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["id", "status", "doi", "title", "journal", "authors", "paperPublicationDate", "sources", "evidence", "body"],
+        "required": ["id", "status", "doi", "title", "originalTitle", "journal", "authors", "paperPublicationDate", "sources", "evidence", "body"],
         "properties": {
           "id": {"type": "string", "minLength": 1},
           "status": {"enum": ["Draft", "Needs More Evidence", "Ready", "Published", "Rejected"]},
           "doi": {"type": "string", "pattern": "^10\\.\\S+\\/\\S+$"},
           "title": {"type": "string", "minLength": 1},
+          "originalTitle": {"type": "string", "minLength": 1},
           "journal": {"type": "string", "minLength": 1},
           "authors": {"type": "array", "minItems": 1},
           "paperPublicationDate": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
