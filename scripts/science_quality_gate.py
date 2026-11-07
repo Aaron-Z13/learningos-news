@@ -36,7 +36,7 @@ def valid_date(v):
 
 def check_schema_file(path):
     schema=load(path)
-    if schema.get("title")!="LearningOS Science Editorial Draft":
+    if schema.get("title") not in {"LearningOS Science Editorial Draft","LearningOS Science Editorial Draft V2 — Claim Evidence"}:
         raise GateError("Draft Schema标题无效")
     required=set(schema.get("required",[]))
     if not {"schemaVersion","kind","draftId","date","articles"}.issubset(required):
@@ -169,3 +169,4 @@ def main():
         print("QUALITY_GATE_FAILED: "+str(e),file=sys.stderr); return 1
 
 if __name__=="__main__": raise SystemExit(main())
+
