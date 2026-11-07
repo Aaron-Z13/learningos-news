@@ -43,10 +43,10 @@ def demo(pkg,outdir):
  for p in picks:
   doi=p["doi"]; refs=[f"{doi}#e{i}" for i,_ in enumerate(p.get("evidence",[]))]
   d={"schemaVersion":"1.0","kind":"science_editorial_draft","articleId":"science-"+re.sub(r"[^a-z0-9]+","-",doi.lower()).strip("-"),"editorialStatus":"Draft","category":"Science","topic":p.get("subject") or "Science","headline":"论文报告："+(p.get("title") or ""),"subheadline":"基于摘要和元数据，等待进一步原文核查。","publication":{"doi":doi,"title":p.get("title"),"journal":p.get("journal"),"publicationDate":p.get("publicationDate"),"publicationDatePrecision":"day" if len(str(p.get("publicationDate","")).split("-"))==3 else "unknown"},"lead":"该研究论文提出了具体研究问题；以下仅反映当前证据包可支持的范围。","researchQuestion":"论文摘要所述的研究问题是什么？","methods":"仅依据 Evidence package 中保存的摘要和元数据转述；未声称已阅读全文。","keyFindings":["论文摘要报告了方法和主要发现，具体表述仍需核对原文。"],"quantitativeResults":[],"limitations":["当前证据主要来自摘要和元数据，不能替代全文审查。","尚未核对补充材料、统计方法和系统误差。"],"broaderSignificance":"该结果可能为相关研究提供线索，但科学意义和适用范围需要结合全文判断。","sources":[{"doi":doi,"url":e["url"],"sourceType":e["type"]} for e in p.get("evidence",[]) if e.get("url")][:3],"claims":[{"claimId":"claim-1","text":"论文摘要报告了该研究的研究问题、方法和结果。","claimType":"sourced_fact","evidenceRefs":refs[:1],"supportLevel":"abstract_supported"}],"verificationWarnings":["草稿未完成独立科学事实核查。","不得将摘要支持内容改写为全文已验证结论。"]}
-  (outdir/(d["articleId"]+".json")).write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\\n")
+  (outdir/(d["articleId"]+".json")).write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n")
 def main():
  ap=argparse.ArgumentParser(); ap.add_argument("--evidence",required=True); ap.add_argument("--selection-output"); ap.add_argument("--draft-dir"); ap.add_argument("--review"); a=ap.parse_args(); pkg=load(a.evidence)
- if a.selection_output: Path(a.selection_output).parent.mkdir(parents=True,exist_ok=True); Path(a.selection_output).write_text(json.dumps(select(pkg),ensure_ascii=False,indent=2)+"\\n")
+ if a.selection_output: Path(a.selection_output).parent.mkdir(parents=True,exist_ok=True); Path(a.selection_output).write_text(json.dumps(select(pkg),ensure_ascii=False,indent=2)+"\n")
  if a.draft_dir: demo(pkg,Path(a.draft_dir))
  if a.review:
   e=review(load(a.review),pkg); print(json.dumps({"valid":not e,"errors":e},ensure_ascii=False)); return 0 if not e else 1
