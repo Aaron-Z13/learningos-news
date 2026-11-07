@@ -7,6 +7,11 @@ from pathlib import Path
 
 STATUSES={"Draft","Needs More Evidence","Ready","Published","Rejected"}
 EVIDENCE_TYPES={"publisher_abstract","preprint_abstract","full_text","supplementary_information","institutional_copy"}
+JOURNAL_ALIASES={"physicalreviewletters":"physicalreviewletters","physrevlett":"physicalreviewletters","journalofamericanchemicalsociety":"journalofamericanchemicalsociety","jacs":"journalofamericanchemicalsociety","astronomyastrophysics":"astronomyastrophysics","aanda":"astronomyastrophysics"}
+
+def canonical_journal(value):
+    key=norm(value)
+    return JOURNAL_ALIASES.get(key,key)
 MAJOR_CLAIM=re.compile(r"(重大突破|首次证明|彻底解决|改变了?该领域|已证实治疗有效|证明了?生命起源)",re.I)
 
 class GateError(Exception): pass
@@ -44,7 +49,7 @@ def verify_doi(article, timeout=20):
         raise GateError(f"{article['id']}: DOI无法通过Crossref核验: {e}")
     expected_title=norm(article.get("originalTitle") or article["title"])
     actual_title=norm((msg.get("title") or [""])[0])
-    if not actual_title or (expected_title not in actual_title and actual_title not in expected_title):
+    if not actual_title or actual_title != expected_title:
         raise GateError(f"{article['id']}: DOI标题不匹配")
     expected_journal=norm(article["journal"])
     actual_journal=norm((msg.get("container-title") or [""])[0])
