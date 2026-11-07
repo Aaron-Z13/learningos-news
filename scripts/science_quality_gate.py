@@ -22,24 +22,29 @@ def valid_date(v):
     except Exception: return False
 
 def verify_doi(article, timeout=20):
-    v=article.get("doiVerification")
-    if isinstance(v,dict) and v.get("verified") is True:
-        required=("titleMatch","authorsMatch","journalMatch","dateMatch")
-        if all(v.get(k) is True for k in required): return {"method":"recorded","verified":True}
-        raise GateError(f"{article['id']}: DOI核验记录存在冲突")
     doi=article["doi"]
     req=urllib.request.Request("https://api.crossref.org/works/"+doi,headers={"User-Agent":"LearningOS-News-Editorial-Gate/1.0"})
     try:
         with urllib.request.urlopen(req,timeout=timeout) as r: msg=json.load(r)["message"]
     except Exception as e:
         raise GateError(f"{article['id']}: DOI无法通过Crossref核验: {e}")
-    title=norm((msg.get("title") or [""])[0])
-    journal=norm(msg.get("container-title",[""])[0])
-    if not title or norm(article["title"]) not in title and title not in norm(article["title"]):
+    expected_title=norm(article.get("originalTitle") or article["title"])
+    actual_title=norm((msg.get("title") or [""])[0])
+    if not actual_title or (expected_title not in actual_title and actual_title not in expected_title):
         raise GateError(f"{article['id']}: DOI标题不匹配")
-    if not journal or norm(article["journal"]) not in journal and journal not in norm(article["journal"]):
+    expected_journal=norm(article["journal"])
+    actual_journal=norm((msg.get("container-title") or [""])[0])
+    if not actual_journal or (expected_journal not in actual_journal and actual_journal not in expected_journal):
         raise GateError(f"{article['id']}: DOI期刊不匹配")
-    return {"method":"crossref","verified":True}
+    authors=msg.get("author") or []
+    expected_first=(article.get("authors") or [""])[0].split()[-1].lower()
+    actual_first=str(authors[0].get("family","")).lower() if authors else ""
+    if expected_first and actual_first and expected_first != actual_first:
+        raise GateError(f"{article['id']}: DOI首作者不匹配")
+    parts=((msg.get("published-online") or msg.get("published-print") or msg.get("published") or {}).get("date-parts") or [[]])[0]
+    if parts and str(parts[0]) != article["paperPublicationDate"][:4]:
+        raise GateError(f"{article['id']}: DOI发表年份不匹配")
+    return {"method":"crossref","verified":True,"titleMatch":True,"authorsMatch":True,"journalMatch":True,"dateMatch":True}
 
 def check_evidence(a):
     ev=a.get("evidence")
