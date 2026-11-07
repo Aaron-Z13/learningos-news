@@ -4,4 +4,6 @@ Tests: 13
 Coverage: DOI mismatch; cross-paper evidence; full-text URL without checked content; quantitative mapping; invalid transition; malformed editions; duplicate publication; metadata mismatch; unknown evidence type.
 Gate scope: schema, metadata, citation-consistency, claim-evidence-mapping.
 Semantic fact check: not performed by automated gate.
-GitHub Actions reference: run 42384221050 (user-provided Phase 3.0 record; 8 tests passed and two Draft outputs generated).
+GitHub Actions reference: run 42384221050 (Phase 3.0; success).
+Phase 3.1 CI run: 42385737868 (Science Editorial Quality Gate; success; 13 unit tests plus V2 Draft evidence gate).
+
