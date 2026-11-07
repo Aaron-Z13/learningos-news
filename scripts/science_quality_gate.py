@@ -6,6 +6,7 @@ from datetime import date
 from pathlib import Path
 
 STATUSES={"Draft","Needs More Evidence","Ready","Published","Rejected"}
+EVIDENCE_TYPES={"publisher_abstract","preprint_abstract","full_text","supplementary_information","institutional_copy"}
 MAJOR_CLAIM=re.compile(r"(重大突破|首次证明|彻底解决|改变了?该领域|已证实治疗有效|证明了?生命起源)",re.I)
 
 class GateError(Exception): pass
@@ -52,6 +53,10 @@ def check_evidence(a):
     for e in ev:
         if not all(isinstance(e.get(k),str) and e[k].strip() for k in ("claim","sourceUrl","locator","evidenceType")):
             raise GateError(f"{a['id']}: 证据记录不完整")
+        if e["evidenceType"] not in EVIDENCE_TYPES:
+            raise GateError(f"{a['id']}: 未知证据类型 {e['evidenceType']}")
+        if not e["sourceUrl"].startswith("https://"):
+            raise GateError(f"{a['id']}: 证据来源必须是HTTPS")
     text=" ".join(str(x) for x in a.get("body",[]))
     if MAJOR_CLAIM.search(text) and not any(e.get("evidenceType") in {"full_text","publisher_abstract"} for e in ev):
         raise GateError(f"{a['id']}: 重大结论缺少正文或出版社证据")
@@ -60,7 +65,7 @@ def duplicates(a, editions_dir):
     if not editions_dir.exists(): return
     for p in editions_dir.rglob("*.json"):
         try: data=load(p)
-        except GateError: continue
+        except GateError as exc: raise GateError(f"正式Edition无法解析: {p}: {exc}")
         for old in data.get("articles",[]):
             if str(old.get("doi","")).lower()==a["doi"].lower():
                 raise GateError(f"{a['id']}: DOI已在正式Edition中出现: {p}")
@@ -87,7 +92,7 @@ def main():
     ap=argparse.ArgumentParser(); ap.add_argument("--draft",required=True); ap.add_argument("--editions-dir",default="editions"); ap.add_argument("--output",required=True)
     args=ap.parse_args()
     try:
-        result=validate(load(args.draft),Path(args.editions-dir))
+        result=validate(load(args.draft),Path(args.editions_dir))
         Path(args.output).write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
         print(json.dumps(result,ensure_ascii=False)); return 0
     except GateError as e:
