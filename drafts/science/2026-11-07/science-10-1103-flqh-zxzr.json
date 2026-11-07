@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "science_editorial_draft",
+  "articleId": "science-10-1103-flqh-zxzr",
+  "editorialStatus": "Draft",
+  "category": "Science",
+  "topic": "Physics",
+  "headline": "论文报告：First measurement of the D s + → K * ( 892 ) 0 μ + ν μ decay, study of dynamics and test of lepton universality with D s + → K * ( 892 ) 0 ℓ + ν ℓ decays",
+  "subheadline": "基于摘要和元数据，等待进一步原文核查。",
+  "publication": {
+    "doi": "10.1103/flqh-zxzr",
+    "title": "First measurement of the D s + → K * ( 892 ) 0 μ + ν μ decay, study of dynamics and test of lepton universality with D s + → K * ( 892 ) 0 ℓ + ν ℓ decays",
+    "journal": "Physical Review Letters",
+    "publicationDate": "2026-11-04",
+    "publicationDatePrecision": "day"
+  },
+  "lead": "该研究论文提出了具体研究问题；以下仅反映当前证据包可支持的范围。",
+  "researchQuestion": "论文摘要所述的研究问题是什么？",
+  "methods": "仅依据 Evidence package 中保存的摘要和元数据转述；未声称已阅读全文。",
+  "keyFindings": [
+    "论文摘要报告了方法和主要发现，具体表述仍需核对原文。"
+  ],
+  "quantitativeResults": [],
+  "limitations": [
+    "当前证据主要来自摘要和元数据，不能替代全文审查。",
+    "尚未核对补充材料、统计方法和系统误差。"
+  ],
+  "broaderSignificance": "该结果可能为相关研究提供线索，但科学意义和适用范围需要结合全文判断。",
+  "sources": [
+    {
+      "doi": "10.1103/flqh-zxzr",
+      "url": "https://doi.org/10.1103/flqh-zxzr",
+      "sourceType": "publisher_abstract"
+    },
+    {
+      "doi": "10.1103/flqh-zxzr",
+      "url": "https://openalex.org/W7160873476",
+      "sourceType": "publisher_abstract"
+    },
+    {
+      "doi": "10.1103/flqh-zxzr",
+      "url": "https://arxiv.org/abs/2605.07176",
+      "sourceType": "full_text"
+    }
+  ],
+  "claims": [
+    {
+      "claimId": "claim-1",
+      "text": "论文摘要报告了该研究的研究问题、方法和结果。",
+      "claimType": "sourced_fact",
+      "evidenceRefs": [
+        "10.1103/flqh-zxzr#e0"
+      ],
+      "supportLevel": "abstract_supported"
+    }
+  ],
+  "verificationWarnings": [
+    "草稿未完成独立科学事实核查。",
+    "不得将摘要支持内容改写为全文已验证结论。"
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "kind": "science_selection_report",
+  "generatedAt": "2026-11-07T15:00:19.520606+00:00",
+  "method": "deterministic_metadata_preranking",
+  "selected": [
+    {
+      "doi": "10.1103/flqh-zxzr",
+      "title": "First measurement of the D s + → K * ( 892 ) 0 μ + ν μ decay, study of dynamics and test of lepton universality with D s + → K * ( 892 ) 0 ℓ + ν ℓ decays",
+      "subject": "Physics",
+      "score": 8,
+      "scoreComponents": {
+        "scientificSignificanceHint": 1,
+        "noveltyHint": 1,
+        "publicRelevanceHint": 1,
+        "evidenceStrength": 3,
+        "recency": 1,
+        "diversityBonus": 1
+      },
+      "rationale": "确定性元数据预排序；不代表科学质量或重要性。",
+      "uncertainty": [
+        "尚未完成独立全文事实核查。"
+      ]
+    },
+    {
+      "doi": "10.1038/s41588-026-02781-x",
+      "title": "An information-theoretic framework for inferring T cell dynamics from single-cell RNA and T cell receptor sequencing",
+      "subject": "Biology",
+      "score": 8,
+      "scoreComponents": {
+        "scientificSignificanceHint": 1,
+        "noveltyHint": 1,
+        "publicRelevanceHint": 1,
+        "evidenceStrength": 3,
+        "recency": 1,
+        "diversityBonus": 1
+      },
+      "rationale": "确定性元数据预排序；不代表科学质量或重要性。",
+      "uncertainty": [
+        "尚未完成独立全文事实核查。"
+      ]
+    },
+    {
+      "doi": "10.1021/jacs.6c17411",
+      "title": "Operando Surface Dynamics Govern the pH-Universal Activity and Stability of Cobalt Phosphide for Hydrogen Evolution",
+      "subject": "Chemistry",
+      "score": 7,
+      "scoreComponents": {
+        "scientificSignificanceHint": 1,
+        "noveltyHint": 1,
+        "publicRelevanceHint": 0,
+        "evidenceStrength": 3,
+        "recency": 1,
+        "diversityBonus": 1
+      },
+      "rationale": "确定性元数据预排序；不代表科学质量或重要性。",
+      "uncertainty": [
+        "尚未完成独立全文事实核查。"
+      ]
+    },
+    {
+      "doi": "10.1109/tpami.2026.3726133",
+      "title": "A Riemannian Framework for the Elastic Analysis of the Spatiotemporal Variability in the Shape and Structure of Tree-Like 4D Objects",
+      "subject": "Computer Science",
+      "score": 7,
+      "scoreComponents": {
+        "scientificSignificanceHint": 1,
+        "noveltyHint": 1,
+        "publicRelevanceHint": 0,
+        "evidenceStrength": 3,
+        "recency": 1,
+        "diversityBonus": 1
+      },
+      "rationale": "确定性元数据预排序；不代表科学质量或重要性。",
+      "uncertainty": [
+        "尚未完成独立全文事实核查。"
+      ]
+    },
+    {
+      "doi": "10.1051/0004-6361/202662483",
+      "title": "Evolution of super-thin galaxies under Milgromian dynamics",
+      "subject": "Astronomy",
+      "score": 7,
+      "scoreComponents": {
+        "scientificSignificanceHint": 1,
+        "noveltyHint": 1,
+        "publicRelevanceHint": 0,
+        "evidenceStrength": 3,
+        "recency": 1,
+        "diversityBonus": 1
+      },
+      "rationale": "确定性元数据预排序；不代表科学质量或重要性。",
+      "uncertainty": [
+        "尚未完成独立全文事实核查。"
+      ]
+    },
+    {
+      "doi": "10.1103/h2lm-whld",
+      "title": "Monte Carlo Solution of the Kondo Model",
+      "subject": "Physics",
+      "score": 7,
+      "scoreComponents": {
+        "scientificSignificanceHint": 1,
+        "noveltyHint": 0,
+        "publicRelevanceHint": 1,
+        "evidenceStrength": 3,
+        "recency": 1,
+        "diversityBonus": 1
+      },
+      "rationale": "确定性元数据预排序；不代表科学质量或重要性。",
+      "uncertainty": [
+        "尚未完成独立全文事实核查。"
+      ]
+    }
+  ],
+  "excludedCount": 24,
+  "disclaimer": "评分仅安排编辑优先级，不证明重要性、创新性或可信度。"
+}
