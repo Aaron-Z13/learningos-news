@@ -105,7 +105,7 @@ def fetch_openalex_batches(papers, source_errors):
     request_count = 0
     for start in range(0, len(papers), OPENALEX_BATCH_SIZE):
         batch = papers[start:start + OPENALEX_BATCH_SIZE]
-        filters = "|".join("doi:" + urllib.parse.quote("https://doi.org/" + p["doi"], safe="") for p in batch)
+        filters = "doi:" + "|".join(urllib.parse.quote("https://doi.org/" + p["doi"], safe="") for p in batch)
         url = "https://api.openalex.org/works?filter=" + filters + "&per-page=" + str(OPENALEX_BATCH_SIZE)
         request_count += 1
         payload, error = retry_json(url, source_errors)
