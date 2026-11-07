@@ -1,0 +1,22 @@
+{
+  "status": "pass",
+  "gateScope": [
+    "schema",
+    "metadata",
+    "citation-consistency",
+    "claim-evidence-mapping"
+  ],
+  "semanticFactCheck": "not_performed_by_automated_gate",
+  "articles": [
+    {
+      "method": "crossref",
+      "verified": true,
+      "titleMatch": true,
+      "authorsMatch": true,
+      "journalMatch": true,
+      "dateMatch": true,
+      "id": "science-besiii-ai-pilot-2026-11-07-001"
+    }
+  ],
+  "count": 1
+}

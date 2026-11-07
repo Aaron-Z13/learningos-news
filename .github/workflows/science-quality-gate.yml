@@ -8,6 +8,8 @@ on:
       - "schemas/science-editorial-draft.schema.json"
       - "tests/test_science_quality_gate.py"
       - "drafts/2026-11-07-science-ready-candidates.json"
+      - "drafts/science/2026-11-07-besiii-ai-pilot.json"
+      - "schemas/science-editorial-draft-v2.schema.json"
 
 permissions:
   contents: read
@@ -20,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run deterministic unit tests
         run: python3 -m unittest discover -s tests -p 'test_science_quality_gate.py' -v
-      - name: Run live integration gate for Ready candidates
+      - name: Run V2 AI Draft evidence gate
         run: |
-          python3 scripts/science_quality_gate.py             --draft drafts/2026-11-07-science-ready-candidates.json             --editions-dir editions             --output /tmp/science-quality-gate-result.json
-          cat /tmp/science-quality-gate-result.json
+          python3 scripts/science_quality_gate.py --draft drafts/science/2026-11-07-besiii-ai-pilot.json --editions-dir editions --schema schemas/science-editorial-draft-v2.schema.json --output /tmp/science-ai-draft-gate-result.json
+          cat /tmp/science-ai-draft-gate-result.json

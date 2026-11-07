@@ -1,0 +1,7 @@
+Command: python -m unittest discover -s tests -v
+Result: PASS
+Tests: 13
+Coverage: DOI mismatch; cross-paper evidence; full-text URL without checked content; quantitative mapping; invalid transition; malformed editions; duplicate publication; metadata mismatch; unknown evidence type.
+Gate scope: schema, metadata, citation-consistency, claim-evidence-mapping.
+Semantic fact check: not performed by automated gate.
+GitHub Actions reference: run 42384221050 (user-provided Phase 3.0 record; 8 tests passed and two Draft outputs generated).

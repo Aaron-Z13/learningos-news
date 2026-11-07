@@ -6,7 +6,7 @@ from unittest.mock import patch
 from scripts import science_quality_gate as gate
 
 def article(**overrides):
-    value={"id":"a1","status":"Ready","doi":"10.1/x","title":"中文标题","originalTitle":"A study","journal":"Journal","authors":["Author One"],"paperPublicationDate":"2026-11-07","sources":[{"title":"source","url":"https://example.com"}],"evidence":[{"claim":"measured value","sourceUrl":"https://example.com","locator":"publisher HTML, Results paragraph 1","evidenceType":"full_text"}],"body":["研究问题","方法和结果","局限"]}
+    value={"id":"a1","status":"Draft","previousStatus":None,"doi":"10.1/x","title":"中文标题","originalTitle":"A study","journal":"Journal","authors":["Author One"],"paperPublicationDate":"2026-11-07","sources":[{"title":"source","url":"https://example.com"}],"evidence":[{"evidenceId":"e1","claimId":"c1","claim":"measured value","sourceDoi":"10.1/x","sourceUrl":"https://example.com","locator":"publisher HTML, Results paragraph 1","checkedContent":"The measured value was 2.0 in the reported sample.","evidenceType":"full_text","verificationStatus":"verified","verificationRecord":{"checkedAt":"2026-11-07T00:00:00Z","method":"manual source reading","recordedBy":"editor"},"quantitativeSupport":True}],"claims":[{"claimId":"c1","text":"measured value","claimType":"quantitative","evidenceRefs":["e1"],"editorialFactCheck":"not_performed_by_automated_gate"}],"body":["研究问题","方法和结果","局限"]}
     value.update(overrides); return value
 
 def crossref_message(**overrides):
@@ -20,11 +20,11 @@ class FakeResponse:
     def read(self): return self.payload
 
 class QualityGateTests(unittest.TestCase):
-    def draft(self,articles): return {"schemaVersion":"1.0","kind":"science_editorial_draft","draftId":"test","date":"2026-11-07","articles":articles}
+    def draft(self,articles): return {"schemaVersion":"2.0","kind":"science_editorial_draft","draftId":"test","date":"2026-11-07","articles":articles}
 
     @patch.object(gate.urllib.request,"urlopen")
-    def test_valid_ready_article_passes_with_mocked_crossref(self,m):
-        m.return_value=FakeResponse(crossref_message()); self.assertEqual(gate.validate(self.draft([article()]),Path("/tmp/no-editions"))["status"],"pass")
+    def test_valid_draft_passes_with_mocked_crossref(self,m):
+        m.return_value=FakeResponse(crossref_message()); result=gate.validate(self.draft([article()]),Path("/tmp/no-editions")); self.assertEqual(result["status"],"pass"); self.assertEqual(result["semanticFactCheck"],"not_performed_by_automated_gate")
 
     @patch.object(gate.urllib.request,"urlopen")
     def test_error_doi_is_rejected(self,m):
@@ -64,7 +64,28 @@ class QualityGateTests(unittest.TestCase):
     @patch.object(gate.urllib.request,"urlopen")
     def test_unreviewed_status_is_rejected(self,m):
         m.return_value=FakeResponse(crossref_message())
-        with self.assertRaises(gate.GateError): gate.validate(self.draft([article(status="Needs More Evidence")]),Path("/tmp/no-editions"))
+        with self.assertRaises(gate.GateError): gate.validate(self.draft([article(status="Reviewed")]),Path("/tmp/no-editions"))
+
+    @patch.object(gate.urllib.request,"urlopen")
+    def test_cross_paper_evidence_is_rejected(self,m):
+        m.return_value=FakeResponse(crossref_message())
+        with self.assertRaises(gate.GateError): gate.validate(self.draft([article(evidence=[{**article()["evidence"][0],"sourceDoi":"10.2/other"}])]),Path("/tmp/no-editions"))
+
+    @patch.object(gate.urllib.request,"urlopen")
+    def test_full_text_url_without_checked_content_is_rejected(self,m):
+        m.return_value=FakeResponse(crossref_message())
+        with self.assertRaises(gate.GateError): gate.validate(self.draft([article(evidence=[{**article()["evidence"][0],"checkedContent":""}])]),Path("/tmp/no-editions"))
+
+    @patch.object(gate.urllib.request,"urlopen")
+    def test_quantitative_claim_must_map_to_quantitative_evidence(self,m):
+        m.return_value=FakeResponse(crossref_message())
+        e={**article()["evidence"][0],"quantitativeSupport":False}
+        with self.assertRaises(gate.GateError): gate.validate(self.draft([article(evidence=[e])]),Path("/tmp/no-editions"))
+
+    @patch.object(gate.urllib.request,"urlopen")
+    def test_invalid_transition_is_rejected(self,m):
+        m.return_value=FakeResponse(crossref_message())
+        with self.assertRaises(gate.GateError): gate.validate(self.draft([article(status="ApprovedForHumanReview", previousStatus="Draft")]),Path("/tmp/no-editions"))
 
     @patch.object(gate.urllib.request,"urlopen")
     def test_malformed_formal_edition_fails_closed(self,m):
