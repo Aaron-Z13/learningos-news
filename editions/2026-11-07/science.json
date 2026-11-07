@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "editionId": "2026-11-07-science-tcell-tcri",
+  "title": "Science Daily · TCRi 用信息论分析免疫治疗中的 T 细胞动态",
+  "category": "science",
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "publishedAt": "2026-11-07T16:27:08+08:00",
+  "updatedAt": "2026-11-07T16:27:08+08:00",
+  "articles": [
+    {
+      "id": "science-tcri-2026-11-07-001",
+      "category": "science",
+      "section": "Biology",
+      "title": "An information-theoretic framework for inferring T cell dynamics from single-cell RNA and T cell receptor sequencing",
+      "summary": "研究团队提出 TCRi：一种结合单细胞 RNA 测序与 T 细胞受体测序的层级贝叶斯信息论框架。论文在四组公开数据集上分析了 167,118 个 CD8 T 细胞，报告克隆型—表型互信息等指标与免疫检查点治疗响应之间存在统计关联；这些结果仍需独立前瞻性队列验证，不能直接视为临床预测工具。",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "免疫检查点抑制剂能够让部分癌症患者获得持久疗效，但研究者仍难以解释哪些 T 细胞克隆参与了治疗响应，以及这些细胞在治疗前后如何变化。单独的 T 细胞受体测序可以识别克隆关系，却不能完整描述细胞功能状态；单细胞 RNA 测序能够提供转录信息，但不一定能把这种状态与特定克隆联系起来。"
+        },
+        {
+          "type": "paragraph",
+          "text": "Nature Genetics 发表的这项研究提出了 TCRi（T-cell receptor information）框架，用概率模型联合分析 T 细胞受体序列和基因表达。论文的研究问题不是寻找一个单一的“响应基因”，而是估计克隆型与转录表型之间的联合分布，并观察这种关系是否与免疫治疗响应相关。"
+        },
+        {
+          "type": "paragraph",
+          "text": "方法上，TCRi 先用变分自编码器将单细胞表达数据嵌入结构化潜在空间，再用层级贝叶斯模型学习克隆型特异的表型分布。模型在克隆型、患者和协变量之间共享信息，并计算克隆型熵、表型熵、表型流以及克隆型与表型之间的互信息。"
+        },
+        {
+          "type": "paragraph",
+          "text": "作者将 TCRi 应用于四组公开的单细胞数据集，共计 167,118 个 CD8 T 细胞。这里的 167,118 是细胞数量，不是患者数量；四组是数据集数量，也不能直接相加成四个独立临床试验。正文列出的队列包括黑色素瘤、肺癌以及基底细胞癌或鳞状细胞癌相关数据，具体样本规模和患者构成因队列而异。"
+        },
+        {
+          "type": "paragraph",
+          "text": "在一个包含 14 名患者的基底细胞癌或鳞状细胞癌队列中，作者比较了治疗前后的克隆型—表型关系。在肺癌队列中，研究分析了 8 名患者的 23,024 个 CD8 T 细胞。另一个黑色素瘤相关分析包含 22 名供体，其中 14 名接受免疫检查点治疗，另有 8 名健康对照；这些数字属于不同分析队列，不能被简单合并为一组总患者数。"
+        },
+        {
+          "type": "paragraph",
+          "text": "作者报告，互信息和表型熵在多个数据集中能够区分部分治疗响应者与非响应者。部分分析显示，响应者在治疗前的克隆型—表型互信息较低，而非响应者的互信息较高。研究还使用随机化克隆标签的空模型进行比较，观察到响应者与非响应者之间的分离减弱。"
+        },
+        {
+          "type": "paragraph",
+          "text": "这些结果支持一个较谨慎的解释：TCRi 能从既有单细胞数据中提取与治疗响应相关的统计结构。它们并不单独证明低互信息会导致治疗成功，也不等于已经建立了可用于临床决策的生物标志物。"
+        },
+        {
+          "type": "paragraph",
+          "text": "研究的限制包括：数据来自既有观察性队列，不同癌种、治疗方案、样本规模和细胞注释方式可能影响结果；部分亚组的患者数量有限；模型表现还需要在独立、前瞻性队列中验证。论文使用的是公开数据集，并没有在本研究中产生新的测序数据。"
+        },
+        {
+          "type": "paragraph",
+          "text": "这项工作的科学价值在于提供了一个联合描述克隆型和细胞表型的概率框架。它可能帮助研究者在不同免疫治疗数据集之间进行更细致的比较，但目前更适合作为研究分析工具，而不是已经成熟的临床预测系统。"
+        }
+      ],
+      "tags": [
+        "科学",
+        "生物学",
+        "单细胞测序",
+        "T细胞受体",
+        "免疫治疗",
+        "信息论"
+      ],
+      "publishedAt": "2026-11-07T16:27:08+08:00",
+      "updatedAt": "2026-11-07T16:27:08+08:00",
+      "sources": [
+        {
+          "title": "Nature Genetics 原始论文",
+          "url": "https://www.nature.com/articles/s41588-026-02781-x"
+        },
+        {
+          "title": "DOI 原始链接",
+          "url": "https://doi.org/10.1038/s41588-026-02781-x"
+        },
+        {
+          "title": "论文发表日期（published-online）",
+          "url": "https://doi.org/10.1038/s41588-026-02781-x"
+        }
+      ],
+      "images": [],
+      "verificationStatus": "manual",
+      "doi": "10.1038/s41588-026-02781-x",
+      "paperPublicationDate": "2026-11-05",
+      "paperPublicationDateField": "published-online",
+      "originalTitle": "An information-theoretic framework for inferring T cell dynamics from single-cell RNA and T cell receptor sequencing"
+    }
+  ]
+}
