@@ -34,7 +34,7 @@ jobs:
           python3 - <<'PY'
           import json, jsonschema
           pairs = [
-            ('schemas/science-editorial-draft.schema.json', 'drafts/2026-11-07-science-ready-candidates.json'),
+            ('schemas/science-editorial-draft.schema.json', 'drafts/science/2026-11-07/science-10-1103-flqh-zxzr.json'),
             ('schemas/science-editorial-draft-v2.schema.json', 'drafts/science/2026-11-07-besiii-ai-pilot.json'),
             ('schemas/science-semantic-review.schema.json', 'reviews/science/2026-11-07-besiii-semantic-review.json'),
             ('schemas/science-release-candidate.schema.json', 'release-candidates/science/2026-11-07-besiii-rc1.json'),
@@ -61,3 +61,4 @@ jobs:
           python3 scripts/publication_eligibility.py --draft drafts/science/2026-11-07-besiii-ai-pilot.json --review reviews/science/2026-11-07-besiii-semantic-review.json --editions-dir editions --output /tmp/publication-eligibility.json
           python3 scripts/publish_science.py --dry-run --candidate release-candidates/science/2026-11-07-besiii-rc1.json --draft drafts/science/2026-11-07-besiii-ai-pilot.json --review reviews/science/2026-11-07-besiii-semantic-review.json --editions-dir editions --manifest manifest.json --output /tmp/publication-dry-run.json
           cat /tmp/publication-eligibility.json /tmp/publication-dry-run.json
+
