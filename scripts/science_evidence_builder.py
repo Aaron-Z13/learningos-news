@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse,json,re,time
+import argparse,json,re,time,html,unicodedata
 from datetime import datetime,timezone
 from pathlib import Path
 from urllib.error import HTTPError,URLError
@@ -22,7 +22,18 @@ def fetch_json(url,retries=RETRIES):
             if i<retries: time.sleep(.5*(2**i))
     raise EvidenceError(last)
 def norm_doi(v): return re.sub(r"^https?://(dx\.)?doi\.org/","",(v or "").strip(),flags=re.I).lower()
-def title_key(v): return re.sub(r"[^a-z0-9]+"," ",(v or "").lower()).strip()
+def title_key(v):
+    text=html.unescape(unicodedata.normalize("NFKC",v or "")).casefold()
+    text=re.sub(r"<[^>]+>"," ",text)
+    text=text.replace("–","-").replace("—","-").replace("‑","-")
+    return re.sub(r"[^\\w]+"," ",text,flags=re.UNICODE).strip()
+def journal_key(v):
+    text=html.unescape(unicodedata.normalize("NFKC",v or "")).casefold()
+    text=text.replace("&"," and ")
+    text=re.sub(r"[.]", "", text)
+    aliases={"astronomy and astrophysics":"astronomy and astrophysics","a&a":"astronomy and astrophysics","physical review letters":"physical review letters","prl":"physical review letters"}
+    text=re.sub(r"\\s+"," ",text).strip()
+    return aliases.get(text,text)
 def date_value(r):
     for k in ("published-online","published-print","issued","published"):
         p=r.get(k,{}).get("date-parts",[[]])[0]
@@ -40,7 +51,7 @@ def verify_crossref(p):
     errs=[]; actual=norm_doi(r.get("DOI"))
     if actual!=doi:errs.append("DOI mismatch")
     if p.get("title") and title_key((r.get("title") or [""])[0])!=title_key(p.get("title")):errs.append("title mismatch")
-    if p.get("journal") and (r.get("container-title") or [""])[0].casefold()!=p["journal"].casefold():errs.append("journal mismatch")
+    if p.get("journal") and journal_key((r.get("container-title") or [""])[0])!=journal_key(p["journal"]):errs.append("journal mismatch")
     if p.get("publicationDate") and date_value(r) and date_value(r)[:4]!=str(p["publicationDate"])[:4]:errs.append("publication year mismatch")
     authors=[{"given":a.get("given"),"family":a.get("family")} for a in r.get("author",[])[:20]]
     return {"doi":actual,"title":(r.get("title") or [""])[0],"journal":(r.get("container-title") or [""])[0],"authors":authors,"date":date_value(r),"url":r.get("URL")},errs
