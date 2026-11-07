@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - ".github/workflows/science-quality-gate.yml"
       - "scripts/science_quality_gate.py"
       - "schemas/science-editorial-draft.schema.json"
       - "tests/test_science_quality_gate.py"
