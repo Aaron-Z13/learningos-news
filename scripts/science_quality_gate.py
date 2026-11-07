@@ -22,6 +22,19 @@ def valid_date(v):
     try: date.fromisoformat(v); return True
     except Exception: return False
 
+def check_schema_file(path):
+    schema=load(path)
+    if schema.get("title")!="LearningOS Science Editorial Draft":
+        raise GateError("Draft Schema标题无效")
+    required=set(schema.get("required",[]))
+    if not {"schemaVersion","kind","draftId","date","articles"}.issubset(required):
+        raise GateError("Draft Schema缺少顶层必填字段")
+    items=schema.get("properties",{}).get("articles",{}).get("items",{})
+    item_required=set(items.get("required",[]))
+    needed={"id","status","doi","title","originalTitle","journal","authors","paperPublicationDate","sources","evidence","body"}
+    if not needed.issubset(item_required):
+        raise GateError("Draft Schema缺少文章必填字段")
+
 def verify_doi(article, timeout=20):
     doi=article["doi"]
     req=urllib.request.Request("https://api.crossref.org/works/"+doi,headers={"User-Agent":"LearningOS-News-Editorial-Gate/1.0"})
@@ -89,9 +102,10 @@ def validate(draft, editions_dir):
     return {"status":"pass","articles":results,"count":len(results)}
 
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument("--draft",required=True); ap.add_argument("--editions-dir",default="editions"); ap.add_argument("--output",required=True)
+    ap=argparse.ArgumentParser(); ap.add_argument("--draft",required=True); ap.add_argument("--editions-dir",default="editions"); ap.add_argument("--schema",default="schemas/science-editorial-draft.schema.json"); ap.add_argument("--output",required=True)
     args=ap.parse_args()
     try:
+        check_schema_file(Path(args.schema))
         result=validate(load(args.draft),Path(args.editions_dir))
         Path(args.output).write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
         print(json.dumps(result,ensure_ascii=False)); return 0
