@@ -44,5 +44,13 @@ class SemanticReviewTests(unittest.TestCase):
         r=review(); r["claims"][0]["verificationStatus"]="supported"; r["claims"][0]["reviewer"]="human"; r["claims"][0]["reviewedAt"]="2026-11-07T00:00:00Z"; r["claims"][0]["verificationMethod"]="string_similarity"; self.assertFails(r)
     def test_missing_claim_coverage_fails(self):
         r=review(); r["claims"]=[]; self.assertFails(r)
+    def test_claim_text_mismatch_fails(self):
+        r=review(); r["claims"][0]["claimText"]="different"; self.assertFails(r)
+    def test_evidence_set_must_exactly_match_draft(self):
+        r=review(); r["claims"][0]["evidenceRefs"]=[]; self.assertFails(r)
+    def test_coverage_must_be_exact(self):
+        r=review(); r["evidenceCoverage"].append(dict(r["evidenceCoverage"][0])); self.assertFails(r)
+    def test_invalid_timestamp_fails_reviewed_claim(self):
+        r=review(); c=r["claims"][0]; c.update(verificationStatus="supported",reviewer="person",reviewedAt="not-a-time"); c["quantitativeCheck"]["status"]="checked"; self.assertFails(r)
 
 if __name__=="__main__": unittest.main()

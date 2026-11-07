@@ -14,6 +14,11 @@ on:
       - "scripts/semantic_review_gate.py"
       - "tests/test_semantic_review_gate.py"
       - "reviews/science/2026-11-07-besiii-semantic-review.json"
+      - "schemas/science-release-candidate.schema.json"
+      - "release-candidates/science/2026-11-07-besiii-rc1.json"
+      - "scripts/publication_eligibility.py"
+      - "scripts/publish_science.py"
+      - "tests/test_publication_pipeline.py"
 
 permissions:
   contents: read
@@ -24,20 +29,21 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Validate V1 and V2 JSON inputs
+      - name: Validate V1, V2, review and candidate JSON Schemas
         run: |
           python3 - <<'PY'
-          import json
-          for path in [
-              'schemas/science-editorial-draft.schema.json',
-              'schemas/science-editorial-draft-v2.schema.json',
-              'schemas/science-semantic-review.schema.json',
-              'drafts/2026-11-07-science-ready-candidates.json',
-              'drafts/science/2026-11-07-besiii-ai-pilot.json',
-              'reviews/science/2026-11-07-besiii-semantic-review.json',
-          ]:
-              json.load(open(path, encoding='utf-8'))
-              print('JSON OK', path)
+          import json, jsonschema
+          pairs = [
+            ('schemas/science-editorial-draft.schema.json', 'drafts/2026-11-07-science-ready-candidates.json'),
+            ('schemas/science-editorial-draft-v2.schema.json', 'drafts/science/2026-11-07-besiii-ai-pilot.json'),
+            ('schemas/science-semantic-review.schema.json', 'reviews/science/2026-11-07-besiii-semantic-review.json'),
+            ('schemas/science-release-candidate.schema.json', 'release-candidates/science/2026-11-07-besiii-rc1.json'),
+          ]
+          for schema_path, value_path in pairs:
+              schema=json.load(open(schema_path, encoding='utf-8'))
+              value=json.load(open(value_path, encoding='utf-8'))
+              jsonschema.Draft202012Validator(schema).validate(value)
+              print('Schema OK', value_path)
           PY
       - name: Run deterministic unit tests
         run: python3 -m unittest discover -s tests -p 'test_science_quality_gate.py' -v
@@ -50,3 +56,8 @@ jobs:
           python3 -m unittest discover -s tests -p 'test_semantic_review_gate.py' -v
           python3 scripts/semantic_review_gate.py --draft drafts/science/2026-11-07-besiii-ai-pilot.json --review reviews/science/2026-11-07-besiii-semantic-review.json --output /tmp/science-semantic-review-result.json
           cat /tmp/science-semantic-review-result.json
+      - name: Run publication eligibility and dry run
+        run: |
+          python3 scripts/publication_eligibility.py --draft drafts/science/2026-11-07-besiii-ai-pilot.json --review reviews/science/2026-11-07-besiii-semantic-review.json --editions-dir editions --output /tmp/publication-eligibility.json
+          python3 scripts/publish_science.py --dry-run --candidate release-candidates/science/2026-11-07-besiii-rc1.json --draft drafts/science/2026-11-07-besiii-ai-pilot.json --review reviews/science/2026-11-07-besiii-semantic-review.json --editions-dir editions --manifest manifest.json --output /tmp/publication-dry-run.json
+          cat /tmp/publication-eligibility.json /tmp/publication-dry-run.json
