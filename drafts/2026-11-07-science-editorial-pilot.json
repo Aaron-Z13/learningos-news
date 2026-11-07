@@ -41,7 +41,10 @@
       "doi": "10.1103/flqh-zxzr",
       "paperPublicationDate": "2026-11-04",
       "paperPublicationDateField": "published-online",
-      "originalTitle": "First measurement of the D s + → K * ( 892 ) 0 μ + ν μ decay, study of dynamics and test of lepton universality with D s + → K * ( 892 ) 0 ℓ + ν ℓ decays"
+      "originalTitle": "First measurement of the D s + → K * ( 892 ) 0 μ + ν μ decay, study of dynamics and test of lepton universality with D s + → K * ( 892 ) 0 ℓ + ν ℓ decays",
+      "category": "science",
+      "images": [],
+      "verificationStatus": "manual"
     },
     {
       "id": "science-pilot-sulfate-radical-2026-11-07-001",
@@ -76,7 +79,10 @@
       "doi": "10.1021/jacs.6c14240",
       "paperPublicationDate": "2026-11-06",
       "paperPublicationDateField": "published-online",
-      "originalTitle": "Redox-Active Spin Trapping for the Electrochemical Detection, Quantification, and Kinetic Analysis of Sulfate Radicals in Aqueous Media"
+      "originalTitle": "Redox-Active Spin Trapping for the Electrochemical Detection, Quantification, and Kinetic Analysis of Sulfate Radicals in Aqueous Media",
+      "category": "science",
+      "images": [],
+      "verificationStatus": "manual"
     },
     {
       "id": "science-pilot-hncoh-2026-11-07-001",
@@ -107,7 +113,10 @@
       "doi": "10.1051/0004-6361/202661485",
       "paperPublicationDate": "2026-11-06",
       "paperPublicationDateField": "published-online",
-      "originalTitle": "Detection of HNCOH+ in the interstellar medium"
+      "originalTitle": "Detection of HNCOH+ in the interstellar medium",
+      "category": "science",
+      "images": [],
+      "verificationStatus": "manual"
     },
     {
       "id": "science-pilot-chexmate-lensing-2026-11-07-001",
@@ -138,7 +147,10 @@
       "doi": "10.1051/0004-6361/202661961",
       "paperPublicationDate": "2026-11-06",
       "paperPublicationDateField": "published-online",
-      "originalTitle": "CHEX-MATE: AMALGAM weak-lensing analysis of 41 Planck Sunyaev–Zel’dovich-selected galaxy clusters"
+      "originalTitle": "CHEX-MATE: AMALGAM weak-lensing analysis of 41 Planck Sunyaev–Zel’dovich-selected galaxy clusters",
+      "category": "science",
+      "images": [],
+      "verificationStatus": "manual"
     }
   ]
 }
