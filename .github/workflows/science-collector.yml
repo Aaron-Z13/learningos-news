@@ -125,7 +125,7 @@ jobs:
                   return None
               return "-".join(str(part).zfill(2) if index else str(part) for index, part in enumerate(parts))
 
-          def publication_date(item):
+          def select_publication_date(item):
               for field in ("published-online", "published-print", "published", "issued", "created"):
                   value = date_from_parts(item.get(field, {}))
                   if value:
@@ -148,7 +148,7 @@ jobs:
                       records, stat["attempts"] = fetch_works(journal["issn"])
                       stat["returnedCount"] = len(records)
                       for item in records:
-                          publication_date, date_field = publication_date(item)
+                          publication_date, date_field = select_publication_date(item)
                           if not publication_date:
                               continue
                           try:
