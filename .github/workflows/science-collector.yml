@@ -324,13 +324,27 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import json
+          import os
           from datetime import datetime, timezone
           from pathlib import Path
+
+          def required_positive_int(name):
+              raw = os.environ.get(name, "").strip()
+              try:
+                  value = int(raw)
+              except ValueError as exc:
+                  raise RuntimeError(f"{name} must be a positive integer, got {raw!r}") from exc
+              if value <= 0:
+                  raise RuntimeError(f"{name} must be a positive integer, got {value}")
+              return value
+
+          collector_run_id = required_positive_int("COLLECTOR_RUN_ID")
+          collector_run_attempt = required_positive_int("COLLECTOR_RUN_ATTEMPT")
           shortlist = json.loads(Path("science-shortlist.json").read_text(encoding="utf-8"))
           metadata = {
-              "collectorRunId": "$COLLECTOR_RUN_ID",
-              "collectorRunAttempt": "$COLLECTOR_RUN_ATTEMPT",
-              "shortlistRunId": "$COLLECTOR_RUN_ID",
+              "collectorRunId": collector_run_id,
+              "collectorRunAttempt": collector_run_attempt,
+              "shortlistRunId": collector_run_id,
               "generatedAt": datetime.now(timezone.utc).isoformat(),
               "collectorCollectedAt": shortlist.get("source", {}).get("collectorCollectedAt"),
               "collectorStatus": shortlist.get("source", {}).get("collectorStatus"),
