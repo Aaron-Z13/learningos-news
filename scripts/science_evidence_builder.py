@@ -26,13 +26,13 @@ def title_key(v):
     text=html.unescape(unicodedata.normalize("NFKC",v or "")).casefold()
     text=re.sub(r"<[^>]+>"," ",text)
     text=text.replace("–","-").replace("—","-").replace("‑","-")
-    return re.sub(r"[^\\w]+"," ",text,flags=re.UNICODE).strip()
+    return re.sub(r"[^\w]+"," ",text,flags=re.UNICODE).strip()
 def journal_key(v):
     text=html.unescape(unicodedata.normalize("NFKC",v or "")).casefold()
     text=text.replace("&"," and ")
     text=re.sub(r"[.]", "", text)
     aliases={"astronomy and astrophysics":"astronomy and astrophysics","a&a":"astronomy and astrophysics","physical review letters":"physical review letters","prl":"physical review letters"}
-    text=re.sub(r"\\s+"," ",text).strip()
+    text=re.sub(r"\s+"," ",text).strip()
     return aliases.get(text,text)
 def date_value(r):
     for k in ("published-online","published-print","issued","published"):
