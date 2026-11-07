@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LearningOS Science Semantic Review Record",
+  "type": "object",
+  "required": ["schemaVersion", "kind", "draftId", "draftFingerprint", "reviewStatus", "claims", "evidenceCoverage", "review"],
+  "properties": {
+    "schemaVersion": {"const":"1.0"}, "kind":{"const":"science_semantic_review"},
+    "draftId":{"type":"string","minLength":1}, "draftFingerprint":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "reviewStatus":{"enum":["pending_review","changes_requested","approved","rejected"]},
+    "claims":{"type":"array","minItems":1,"items":{"type":"object","required":["claimId","claimText","evidenceRefs","evidenceSource","verificationMethod","verificationStatus","verificationNotes","reviewer","reviewedAt"],"properties":{"claimId":{"type":"string","minLength":1},"claimText":{"type":"string","minLength":1},"evidenceRefs":{"type":"array","items":{"type":"string"}},"evidenceSource":{"type":"array","items":{"type":"string"}},"verificationMethod":{"type":"string","minLength":1},"verificationStatus":{"enum":["unreviewed","supported","partially_supported","unsupported","contradicted","insufficient_evidence"]},"verificationNotes":{"type":"string"},"reviewer":{"type":["string","null"]},"reviewedAt":{"type":["string","null"]},"quantitativeCheck":{"type":"object","required":["status","notes"],"properties":{"status":{"enum":["not_applicable","not_performed","checked"]},"notes":{"type":"string"}}}}}},
+    "evidenceCoverage":{"type":"array","minItems":1,"items":{"type":"object","required":["evidenceId","level","evidenceType","accessStatus","checkedScope","locator","notes"],"properties":{"evidenceId":{"type":"string"},"level":{"enum":["L0","L1","L2","L3"]},"evidenceType":{"type":"string"},"accessStatus":{"enum":["accessible","partial","failed"]},"checkedScope":{"type":"string"},"locator":{"type":"string"},"notes":{"type":"string"}}}},
+    "review":{"type":"object","required":["reviewerId","decision","reviewTimestamp","reviewNotes","claimVerificationSummary","evidenceCoverageSummary"],"properties":{"reviewerId":{"type":["string","null"]},"decision":{"enum":["pending_review","changes_requested","approved","rejected"]},"reviewTimestamp":{"type":["string","null"]},"reviewNotes":{"type":"string"},"claimVerificationSummary":{"type":"string"},"evidenceCoverageSummary":{"type":"string"}}}
+  }
+}

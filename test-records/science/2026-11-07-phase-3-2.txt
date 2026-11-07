@@ -1,0 +1,8 @@
+Phase 3.2 local verification
+Unit tests: 29 passed (13 existing Quality Gate tests + 16 Semantic Review tests).
+V1 compatibility: legacy schema JSON and legacy Draft JSON parse successfully; legacy schema remains unchanged.
+V2 compatibility: V2 schema and BESIII Draft validate successfully.
+Evidence gate: pass; semanticFactCheck=not_performed_by_automated_gate.
+Semantic review gate: draft_valid=true, semantic_review_valid=true, publication_eligible=false.
+BESIII status: Draft; semantic review: pending_review; all 3 claims: unreviewed; all 3 evidence records: L1 metadata_abstract.
+APS full text: not verified; Cloud proxy returned 403 in Phase 3.1 and remains recorded as inaccessible.

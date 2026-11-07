@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "science_semantic_review",
+  "draftId": "science-besiii-ai-pilot-2026-11-07",
+  "draftFingerprint": "8ac5836e3ef69ab83602f151bcbbe4ead0e4a769d186ffb281dca16192aa8c06",
+  "reviewStatus": "pending_review",
+  "claims": [
+    {"claimId":"besiii-c1","claimText":"BESIII数据样本为7.33 fb⁻¹，能区为4.128–4.226 GeV。","evidenceRefs":["besiii-e1"],"evidenceSource":["https://api.openalex.org/works/https://doi.org/10.1103/flqh-zxzr"],"verificationMethod":"未完成人工语义核查；仅核对 Evidence package 中同 DOI 摘要转录。","verificationStatus":"unreviewed","verificationNotes":"需要人工核对 APS 正文中的样本选择、积分亮度、能量范围和实验条件。","reviewer":null,"reviewedAt":null,"claimType":"quantitative","quantitativeCheck":{"status":"not_performed","notes":"尚未独立核对数值、单位、误差或条件。"}},
+    {"claimId":"besiii-c2","claimText":"摘要报告缪子道和电子道分支比及统计、系统不确定度。","evidenceRefs":["besiii-e2"],"evidenceSource":["https://api.openalex.org/works/https://doi.org/10.1103/flqh-zxzr"],"verificationMethod":"未完成人工语义核查；仅核对摘要转录中的数字字符串。","verificationStatus":"unreviewed","verificationNotes":"需要人工核对正文表格、统计/系统误差区分、比较对象和误差处理。","reviewer":null,"reviewedAt":null,"claimType":"quantitative","quantitativeCheck":{"status":"not_performed","notes":"尚未独立复算或核对误差。"}},
+    {"claimId":"besiii-c3","claimText":"摘要报告微分量、前后不对称度和未发现轻子味普适性破缺的作者结论。","evidenceRefs":["besiii-e3"],"evidenceSource":["https://api.openalex.org/works/https://doi.org/10.1103/flqh-zxzr"],"verificationMethod":"未完成人工语义核查；保留作者摘要中的 within uncertainties 限定语。","verificationStatus":"unreviewed","verificationNotes":"需要人工核对完整与分段 q² 结果、统计显著性和理论输入，不能把该表述升级为证明标准模型。","reviewer":null,"reviewedAt":null,"claimType":"result","quantitativeCheck":{"status":"not_applicable","notes":"核心结论仍需人工语义核查。"}}
+  ],
+  "evidenceCoverage": [
+    {"evidenceId":"besiii-e1","level":"L1","evidenceType":"metadata_abstract","accessStatus":"accessible","checkedScope":"OpenAlex 同 DOI 转录摘要中的数据样本和能区句子；未访问 APS 正文。","locator":"OpenAlex JSON abstract 字段，数据样本与质心能量段","notes":"L1 不升级为全文证据。"},
+    {"evidenceId":"besiii-e2","level":"L1","evidenceType":"metadata_abstract","accessStatus":"accessible","checkedScope":"OpenAlex 同 DOI 转录摘要中的两个分支比句子；未复算误差。","locator":"OpenAlex JSON abstract 字段，branching fractions 段","notes":"数值相同不代表单位、误差或比较条件已完成语义核查。"},
+    {"evidenceId":"besiii-e3","level":"L1","evidenceType":"metadata_abstract","accessStatus":"accessible","checkedScope":"OpenAlex 同 DOI 转录摘要中的微分量、前后不对称度和 within uncertainties 句子。","locator":"OpenAlex JSON abstract 字段，differential rates 和 No violation 段","notes":"APS HTML/PDF 访问失败，代理返回 403；没有 Full-text Verified。"}
+  ],
+  "review": {"reviewerId":null,"decision":"pending_review","reviewTimestamp":null,"reviewNotes":"这是待人工审核记录，不是自动语义判定。APS 正文访问失败，所有 Claim 保持 unreviewed；不得批准或发布。","claimVerificationSummary":"3 claims unreviewed；没有自动 supported/unsupported 结论。","evidenceCoverageSummary":"3 条证据均为 L1 摘要级；没有 L2/L3。"
+  }
+}
