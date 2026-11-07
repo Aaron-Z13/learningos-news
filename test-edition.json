@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "editionId": "2026-11-07-sports-test",
+  "title": "Sports Daily · 连接测试",
+  "category": "sports",
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "publishedAt": "2026-11-07T15:00:00+08:00",
+  "updatedAt": "2026-11-07T15:00:00+08:00",
+  "articles": [
+    {
+      "id": "learningos-connection-test-001",
+      "category": "sports",
+      "section": "System Test",
+      "title": "测试文章：LearningOS 新闻数据连接",
+      "summary": "这是一条专门用于测试远程 JSON 导入的示例内容，不是真实体育新闻。",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "如果你能在 LearningOS Daily News 中阅读这段文字，就说明 GitHub 上的 JSON 文件已被成功读取并导入。此文章仅用于连接测试，不包含任何赛事信息。"
+        }
+      ],
+      "tags": [
+        "测试",
+        "同步"
+      ],
+      "publishedAt": "2026-11-07T15:00:00+08:00",
+      "updatedAt": "2026-11-07T15:00:00+08:00",
+      "sources": [
+        {
+          "title": "LearningOS News Repository",
+          "url": "https://github.com/Aaron-Z13/learningos-news"
+        }
+      ],
+      "images": [],
+      "verificationStatus": "manual",
+      "doi": null
+    }
+  ]
+}
