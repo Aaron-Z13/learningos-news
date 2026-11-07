@@ -65,6 +65,8 @@ jobs:
           seen_dois = set()
           journal_stats = []
           source_errors = []
+          successful_sources = 0
+          total_sources = sum(len(journals) for journals in JOURNALS.values())
 
           def throttle():
               global next_request_at
@@ -84,8 +86,6 @@ jobs:
               params = {
                   "filter": f"from-pub-date:{start_date},until-pub-date:{end_date},type:journal-article",
                   "rows": ROWS,
-                  "sort": "published",
-                  "order": "desc",
                   "cursor": "*",
               }
               email = os.environ.get("CROSSREF_EMAIL", "").strip()
@@ -123,7 +123,9 @@ jobs:
                               params["cursor"] = next_cursor
                               break
                       except urllib.error.HTTPError as exc:
-                          last_error = f"HTTP {exc.code}: {exc.reason}"
+                          body = exc.read(512).decode("utf-8", errors="replace")
+                          body = " ".join(body.split())
+                          last_error = f"HTTP {exc.code}: {exc.reason}; response={body[:500]}"
                           if exc.code not in RETRYABLE_STATUS or attempt >= MAX_RETRIES:
                               raise RuntimeError(last_error)
                           wait = retry_after(exc.headers) or min(60.0, 2 ** attempt + random.random())
@@ -188,12 +190,17 @@ jobs:
                   }
                   try:
                       records, total_matches, request_count, page_count, truncated = fetch_works(journal["issn"])
+                      successful_sources += 1
                       stat["attempts"] = request_count
                       stat["returnedCount"] = len(records)
                       stat["totalMatches"] = total_matches
                       stat["actualFetched"] = len(records)
                       stat["pageCount"] = page_count
                       stat["truncated"] = truncated
+                      records.sort(
+                          key=lambda item: parse_date(select_publication_date(item)[0]) or datetime.min.date(),
+                          reverse=True,
+                      )
                       for item in records:
                           publication_date, date_field = select_publication_date(item)
                           if not publication_date:
@@ -241,6 +248,11 @@ jobs:
                       print(f"FAILED {subject} / {journal['title']} ({journal['issn']}): {exc}")
                   journal_stats.append(stat)
                   print(json.dumps(stat, ensure_ascii=False))
+
+          if successful_sources == 0:
+              raise RuntimeError(
+                  f"All {total_sources} journal sources failed; refusing to upload an empty candidate artifact"
+              )
 
           subject_counts = {
               subject: sum(p["subject"] == subject for p in candidates)
