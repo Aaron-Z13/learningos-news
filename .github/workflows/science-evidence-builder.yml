@@ -1,0 +1,56 @@
+name: Science Evidence Builder
+on:
+  workflow_dispatch:
+    inputs:
+      latest_url:
+        description: "Optional latest.json URL"
+        required: false
+        default: "https://raw.githubusercontent.com/Aaron-Z13/learningos-news/main/editorial-input/science/latest.json"
+permissions:
+  contents: write
+jobs:
+  build-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run deterministic tests
+        run: python -m unittest discover -s tests -p 'test_science_evidence_builder.py' -v
+      - name: Build evidence package
+        env:
+          LATEST_URL: "${{ inputs.latest_url }}"
+        run: |
+          python - <<'PY'
+          import json, os
+          from urllib.request import urlopen
+          from pathlib import Path
+          latest=json.load(urlopen(os.environ["LATEST_URL"]))
+          out=Path("evidence/science") / f"{latest['date']}-run-{latest['runId']}-attempt-{latest['runAttempt']}.json"
+          import subprocess
+          subprocess.run(["python","scripts/science_evidence_builder.py","--latest",os.environ["LATEST_URL"],"--output",str(out)],check=True)
+          PY
+      - name: Validate package invariants
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=sorted(Path("evidence/science").glob("*.json"))[-1]
+          d=json.loads(p.read_text())
+          assert d["limits"]["paidApisUsed"] is False
+          assert len(d["papers"]) <= 30
+          assert int(d["source"]["runId"]) > 0 and int(d["source"]["runAttempt"]) > 0
+          print(p)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: science-evidence
+          path: evidence/science/*.json
+      - name: Commit evidence package
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add evidence/science
+          git diff --cached --quiet || git commit -m "chore: add science evidence package"
+          git push
