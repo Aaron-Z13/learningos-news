@@ -51,9 +51,8 @@ def verify_doi(article, timeout=20):
     actual_title=norm((msg.get("title") or [""])[0])
     if not actual_title or actual_title != expected_title:
         raise GateError(f"{article['id']}: DOI标题不匹配")
-    expected_journal=norm(article["journal"])
-    actual_journal=norm((msg.get("container-title") or [""])[0])
-    if not actual_journal or (expected_journal not in actual_journal and actual_journal not in expected_journal):
+    actual_journal=(msg.get("container-title") or [""])[0]
+    if not actual_journal or canonical_journal(article["journal"]) != canonical_journal(actual_journal):
         raise GateError(f"{article['id']}: DOI期刊不匹配")
     authors=msg.get("author") or []
     expected_first=(article.get("authors") or [""])[0].split()[-1].lower()
