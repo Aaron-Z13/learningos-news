@@ -1,0 +1,15 @@
+
+{
+  "schemaVersion": "1.0",
+  "feedType": "learningos-news-manifest",
+  "title": "THE DAILY",
+  "timezone": "Asia/Shanghai",
+  "editions": [
+    {
+      "id": "2026-11-07-science-tcell-tcri",
+      "category": "science",
+      "date": "2026-11-07",
+      "url": "https://raw.githubusercontent.com/Aaron-Z13/learningos-news/main/editions/2026-11-07/science.json"
+    }
+  ]
+}
