@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "science_editorial_draft",
+  "draftId": "science-ready-candidates-2026-11-07",
+  "date": "2026-11-07",
+  "articles": [
+    {
+      "id": "science-hncoh-2026-11-07",
+      "status": "Ready",
+      "doi": "10.1051/0004-6361/202663271",
+      "title": "星际空间发现此前难以捕捉的 HNCOH⁺ 分子",
+      "journal": "Astronomy & Astrophysics",
+      "authors": [
+        "Marta Rey-Montejo",
+        "Izaskun Jiménez-Serra",
+        "Miguel Sanz-Novo",
+        "et al."
+      ],
+      "paperPublicationDate": "2026-11-06",
+      "doiVerification": {
+        "verified": true,
+        "titleMatch": true,
+        "authorsMatch": true,
+        "journalMatch": true,
+        "dateMatch": true,
+        "method": "A&A DOI与arXiv版本交叉核对"
+      },
+      "sources": [
+        {
+          "title": "arXiv开放全文",
+          "url": "https://arxiv.org/abs/2610.39654"
+        },
+        {
+          "title": "A&A DOI",
+          "url": "https://doi.org/10.1051/0004-6361/202663271"
+        }
+      ],
+      "evidence": [
+        {
+          "claim": "研究使用Yebes 40 m、IRAM 30 m和APEX，覆盖31–275 GHz、约150 GHz带宽。",
+          "sourceUrl": "https://arxiv.org/abs/2610.39654",
+          "locator": "摘要 Methods 段",
+          "evidenceType": "full_text"
+        },
+        {
+          "claim": "HNCOH+柱密度为(9.9±0.5)×10^12 cm−2，相对H2丰度为(7.3+1.3−1.0)×10−11。",
+          "sourceUrl": "https://arxiv.org/abs/2610.39654",
+          "locator": "摘要 Results 段",
+          "evidenceType": "full_text"
+        },
+        {
+          "claim": "HNCOH+/H2NCO+柱密度比为3.8+0.5−0.4。",
+          "sourceUrl": "https://arxiv.org/abs/2610.39654",
+          "locator": "摘要 Results 段",
+          "evidenceType": "full_text"
+        }
+      ],
+      "body": [
+        "研究团队在银河系中心分子云 G+0.693-0.027 的深度分子谱线巡天中寻找此前尚未被可靠识别的 O-质子化异构体 HNCOH+。这一问题属于分子天文学：不同异构体的丰度可以帮助约束星际气体中的反应路径。",
+        "作者结合三台望远镜的宽带观测，报告了多条与 HNCOH+ 相符的谱线，并给出柱密度、相对 H2 丰度以及与 H2NCO+ 的比值。这里的“发现”是基于谱线归属和模型拟合的观测推断，不是对分子进行直接成像。",
+        "结果的重要性在于扩展了星际介质中含异氰酸基分子的清单，也为比较异构体的动力学形成路径提供约束。论文还指出，异构体丰度不必简单服从热力学稳定性排序。",
+        "局限包括谱线混淆排除、LTE拟合假设、分子丰度模型和化学网络不确定性。本文适合以观测结果和证据范围为中心报道，不应延伸为生命起源已被证明。"
+      ]
+    },
+    {
+      "id": "science-chexmate-2026-11-07",
+      "status": "Ready",
+      "doi": "10.1051/0004-6361/202661961",
+      "title": "弱引力透镜为41个星系团建立质量标定基线",
+      "journal": "Astronomy & Astrophysics",
+      "authors": [
+        "Keiichi Umetsu",
+        "Raphael Gavazzi",
+        "Mauro Sereno",
+        "et al."
+      ],
+      "paperPublicationDate": "2026-11-06",
+      "doiVerification": {
+        "verified": true,
+        "titleMatch": true,
+        "authorsMatch": true,
+        "journalMatch": true,
+        "dateMatch": true,
+        "method": "A&A DOI与arXiv v3交叉核对"
+      },
+      "sources": [
+        {
+          "title": "arXiv开放全文（v3）",
+          "url": "https://arxiv.org/abs/2606.24142"
+        },
+        {
+          "title": "A&A DOI",
+          "url": "https://doi.org/10.1051/0004-6361/202661961"
+        }
+      ],
+      "evidence": [
+        {
+          "claim": "样本包含41个Planck SZ选出的星系团，红移范围0.11≤z≤0.55。",
+          "sourceUrl": "https://arxiv.org/abs/2606.24142",
+          "locator": "摘要首段",
+          "evidenceType": "full_text"
+        },
+        {
+          "claim": "每个星系团弱引力透镜信号中位S/N为6.5，质量标定总系统不确定度为8%。",
+          "sourceUrl": "https://arxiv.org/abs/2606.24142",
+          "locator": "摘要第2段",
+          "evidenceType": "full_text"
+        },
+        {
+          "claim": "在M200=10^15太阳质量、z=0.25处，c200=3.53±0.71；基准回归给出MSZ/M500=0.83±0.09。",
+          "sourceUrl": "https://arxiv.org/abs/2606.24142",
+          "locator": "摘要第3段",
+          "evidenceType": "full_text"
+        }
+      ],
+      "body": [
+        "星系团质量是连接观测和宇宙学模型的关键量。弱引力透镜通过背景星系形状的微小偏转估计前景质量，与依赖气体状态的X射线或SZ方法互补。",
+        "CHEX-MATE团队分析了41个Planck SZ选出的星系团，使用Subaru/Suprime-Cam和CFHT/MegaPrime成像。论文报告每个星系团的方位平均弱透镜信号中位S/N为6.5，并以NFW模型拟合过量表面质量密度。",
+        "研究估计弱透镜质量标定的总系统不确定度为8%。在特定质量和红移点，浓度参数c200为3.53±0.71；Planck SZ质量代理与M500的基准比值为0.83±0.09。作者将这些结果作为CHEX-MATE多探针质量标定的初始基线。",
+        "这些数字描述的是样本和模型条件下的标定结果，不是对所有星系团的普遍常数。样本选择效应、透镜建模偏差、残余校准不确定度和质量代理回归形式仍会影响外推。"
+      ]
+    }
+  ]
+}
