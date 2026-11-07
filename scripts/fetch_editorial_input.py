@@ -159,7 +159,6 @@ def validate_handoff(
 
     return {
         "sourceRun": {
-            "repository": run.get("headBranch") and run.get("headBranch") or "main",
             "runId": run_id,
             "runAttempt": attempt,
             "workflow": WORKFLOW,
