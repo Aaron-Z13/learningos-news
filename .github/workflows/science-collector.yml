@@ -34,7 +34,7 @@ jobs:
                   {"title": "Nature Physics", "issn": "1745-2481"},
               ],
               "Biology": [
-                  {"title": "Cell", "issn": "1097-4172"},
+                  {"title": "Cell", "issn": "0092-8674"},
                   {"title": "Nature Genetics", "issn": "1546-1718"},
               ],
               "Chemistry": [
@@ -53,6 +53,7 @@ jobs:
 
           WINDOW_DAYS = 14
           ROWS = 100
+          MAX_PAGES = 10
           REQUEST_INTERVAL_SECONDS = 1.0
           MAX_RETRIES = 4
           RETRYABLE_STATUS = {429, 500, 502, 503, 504}
@@ -85,45 +86,82 @@ jobs:
                   "rows": ROWS,
                   "sort": "published",
                   "order": "desc",
+                  "cursor": "*",
               }
               email = os.environ.get("CROSSREF_EMAIL", "").strip()
               if email:
                   params["mailto"] = email
-              url = "https://api.crossref.org/journals/" + issn + "/works?" + urllib.parse.urlencode(params)
-              request = urllib.request.Request(
-                  url,
-                  headers={
-                      "User-Agent": "LearningOS-News/1.0 (Crossref journal collector)",
-                      "Accept": "application/json",
-                  },
-              )
-              last_error = None
-              for attempt in range(MAX_RETRIES + 1):
-                  throttle()
-                  try:
-                      with urllib.request.urlopen(request, timeout=30) as response:
-                          return json.load(response)["message"]["items"], attempt + 1
-                  except urllib.error.HTTPError as exc:
-                      last_error = f"HTTP {exc.code}: {exc.reason}"
-                      if exc.code not in RETRYABLE_STATUS or attempt >= MAX_RETRIES:
-                          raise RuntimeError(last_error)
-                      wait = retry_after(exc.headers) or min(60.0, 2 ** attempt + random.random())
-                      print(f"RETRY {issn} attempt={attempt + 1} wait={wait:.1f}s reason={last_error}")
-                      time.sleep(wait)
-                  except (urllib.error.URLError, TimeoutError) as exc:
-                      last_error = f"{type(exc).__name__}: {exc}"
-                      if attempt >= MAX_RETRIES:
-                          raise RuntimeError(last_error)
-                      wait = min(60.0, 2 ** attempt + random.random())
-                      print(f"RETRY {issn} attempt={attempt + 1} wait={wait:.1f}s reason={last_error}")
-                      time.sleep(wait)
-              raise RuntimeError(last_error or "unknown request failure")
+              base_url = "https://api.crossref.org/journals/" + issn + "/works"
+              all_items = []
+              total_results = None
+              page_count = 0
+              request_count = 0
+              truncated = False
+              while page_count < MAX_PAGES:
+                  url = base_url + "?" + urllib.parse.urlencode(params)
+                  request = urllib.request.Request(
+                      url,
+                      headers={
+                          "User-Agent": "LearningOS-News/1.0 (Crossref journal collector)",
+                          "Accept": "application/json",
+                      },
+                  )
+                  last_error = None
+                  for attempt in range(MAX_RETRIES + 1):
+                      throttle()
+                      request_count += 1
+                      try:
+                          with urllib.request.urlopen(request, timeout=30) as response:
+                              message = json.load(response)["message"]
+                              page_items = message.get("items", [])
+                              total_results = message.get("total-results", total_results)
+                              all_items.extend(page_items)
+                              page_count += 1
+                              next_cursor = message.get("next-cursor")
+                              if len(page_items) < ROWS or not next_cursor:
+                                  return all_items, total_results or len(all_items), request_count, page_count, False
+                              params["cursor"] = next_cursor
+                              break
+                      except urllib.error.HTTPError as exc:
+                          last_error = f"HTTP {exc.code}: {exc.reason}"
+                          if exc.code not in RETRYABLE_STATUS or attempt >= MAX_RETRIES:
+                              raise RuntimeError(last_error)
+                          wait = retry_after(exc.headers) or min(60.0, 2 ** attempt + random.random())
+                          print(f"RETRY {issn} attempt={attempt + 1} wait={wait:.1f}s reason={last_error}")
+                          time.sleep(wait)
+                      except (urllib.error.URLError, TimeoutError) as exc:
+                          last_error = f"{type(exc).__name__}: {exc}"
+                          if attempt >= MAX_RETRIES:
+                              raise RuntimeError(last_error)
+                          wait = min(60.0, 2 ** attempt + random.random())
+                          print(f"RETRY {issn} attempt={attempt + 1} wait={wait:.1f}s reason={last_error}")
+                          time.sleep(wait)
+                  else:
+                      raise RuntimeError(last_error or "unknown request failure")
+              truncated = bool(page_count >= MAX_PAGES and next_cursor)
+              return all_items, total_results or len(all_items), request_count, page_count, truncated
 
           def date_from_parts(container):
               parts = container.get("date-parts", [[]])[0]
               if not parts:
                   return None
               return "-".join(str(part).zfill(2) if index else str(part) for index, part in enumerate(parts))
+
+          def parse_date(value):
+              if not value:
+                  return None
+              parts = [int(part) for part in value.split("-")]
+              while len(parts) < 3:
+                  parts.append(1)
+              return datetime(parts[0], parts[1], parts[2], tzinfo=timezone.utc).date()
+
+          def normalize_title(title):
+              import html
+              import re
+              text = html.unescape(title or "")
+              text = re.sub(r"<[^>]+>", "", text)
+              text = re.sub(r"\\s+", " ", text)
+              return text.strip()
 
           def select_publication_date(item):
               for field in ("published-online", "published-print", "published", "issued", "created"):
@@ -141,24 +179,31 @@ jobs:
                       "returnedCount": 0,
                       "filteredCount": 0,
                       "duplicateCount": 0,
+                      "totalMatches": 0,
+                      "actualFetched": 0,
+                      "pageCount": 0,
+                      "truncated": False,
                       "attempts": 0,
                       "error": None,
                   }
                   try:
-                      records, stat["attempts"] = fetch_works(journal["issn"])
+                      records, total_matches, request_count, page_count, truncated = fetch_works(journal["issn"])
+                      stat["attempts"] = request_count
                       stat["returnedCount"] = len(records)
+                      stat["totalMatches"] = total_matches
+                      stat["actualFetched"] = len(records)
+                      stat["pageCount"] = page_count
+                      stat["truncated"] = truncated
                       for item in records:
                           publication_date, date_field = select_publication_date(item)
                           if not publication_date:
                               continue
-                          try:
-                              selected_date = datetime.fromisoformat(publication_date).date()
-                          except ValueError:
-                              continue
-                          if selected_date < start_date or selected_date > end_date:
+                          selected_date = parse_date(publication_date)
+                          if not selected_date or selected_date < start_date or selected_date > end_date:
                               continue
                           dois = item.get("DOI", "").strip()
-                          title = (item.get("title") or [""])[0].strip()
+                          original_title = (item.get("title") or [""])[0].strip()
+                          title = normalize_title(original_title)
                           if not dois or not title:
                               continue
                           doi_key = dois.casefold()
@@ -171,6 +216,7 @@ jobs:
                               "id": doi_key,
                               "subject": subject,
                               "title": title,
+                              "titleOriginal": original_title,
                               "journal": journal["title"],
                               "issn": journal["issn"],
                               "doi": dois,
