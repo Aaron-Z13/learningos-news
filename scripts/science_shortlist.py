@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Explainable research shortlisting. Priority only; not a quality verdict."""
+"""Research Shortlisting V1 with bounded OpenAlex abstract enrichment."""
 import argparse
 import html
 import json
-import os
 import re
 import time
 import urllib.error
@@ -14,9 +13,10 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 SUBJECTS = ("Physics", "Biology", "Chemistry", "Astronomy", "Computer Science")
-MAX_PER_SUBJECT = 6
-MIN_SCORE = 3
-ABSTRACT_FETCH_LIMIT = 200
+ENRICHMENT_LIMIT = 100
+FINAL_LIMIT = 30
+OPENALEX_BATCH_SIZE = 50
+MAX_RETRIES = 3
 REQUEST_INTERVAL_SECONDS = 0.25
 NON_RESEARCH_TYPES = {"editorial", "correction", "erratum", "retraction", "news", "letter", "commentary"}
 EXPLICIT_NON_RESEARCH_TITLE = re.compile(
@@ -27,18 +27,14 @@ REVIEW_TITLE = re.compile(r"\b(review|survey|perspective|overview|state[- ]of[- 
 RESEARCH_TITLE = re.compile(
     r"\b(measurement|detection|characteri[sz]ation|synthesis|structure|dynamics|"
     r"evolution|association|regulation|quantif|analysis|observed|experiment|"
-    r"sequencing|profiling|classification|optimization|model)\b",
-    re.IGNORECASE,
+    r"sequencing|profiling|classification|optimization|model)\b", re.IGNORECASE
 )
-ABSTRACT_RE = re.compile(r"<jats:abstract[^>]*>(.*?)</jats:abstract>|<abstract[^>]*>(.*?)</abstract>", re.I | re.S)
-TAG_RE = re.compile(r"<[^>]+>")
 
 
 def clean_text(value):
     value = html.unescape(str(value or ""))
-    value = TAG_RE.sub("", value)
-    value = re.sub(r"\s+", " ", value)
-    return value.strip()
+    value = re.sub(r"<[^>]*>", "", value)
+    return re.sub(r"\s+", " ", value).strip()
 
 
 def normalize_title(value):
@@ -65,108 +61,130 @@ def classify_paper(paper):
     return "original-research", None
 
 
-def abstract_from_crossref(doi):
-    email = os.environ.get("CROSSREF_EMAIL", "").strip()
-    params = {}
-    if email:
-        params["mailto"] = email
-    url = "https://api.crossref.org/works/" + urllib.parse.quote(doi, safe="") + (
-        "?" + urllib.parse.urlencode(params) if params else ""
-    )
-    request = urllib.request.Request(
-        url,
-        headers={"User-Agent": "LearningOS-News/1.0 (research shortlisting)", "Accept": "application/json"},
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=20) as response:
-            item = json.load(response).get("message", {})
-        raw = item.get("abstract")
-        if not raw:
-            return None, None, "Crossref metadata does not provide an abstract"
-        text = clean_text(raw)
-        if not text:
-            return None, None, "Crossref abstract is empty after cleaning"
-        return text[:4000], "Crossref DOI metadata", None
-    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
-        return None, None, f"Crossref abstract lookup failed: {type(exc).__name__}"
+def restore_inverted(index):
+    if not isinstance(index, dict):
+        return ""
+    words = []
+    for token, positions in index.items():
+        for position in positions:
+            words.append((position, token))
+    return clean_text(" ".join(token for _, token in sorted(words)))
 
 
-def enrich_abstracts(papers):
-    enriched = 0
-    attempted = 0
-    for paper in papers[:ABSTRACT_FETCH_LIMIT]:
-        attempted += 1
-        abstract, source, error = abstract_from_crossref(paper.get("doi", ""))
-        if abstract:
-            paper["_abstract"] = abstract
-            paper["_abstractSource"] = source
-            enriched += 1
-        else:
-            paper["_abstractError"] = error
+def retry_json(url, source_errors):
+    last_error = None
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            request = urllib.request.Request(
+                url,
+                headers={"User-Agent": "LearningOS-News/1.0 (editorial abstract enrichment)", "Accept": "application/json"},
+            )
+            with urllib.request.urlopen(request, timeout=20) as response:
+                content_type = response.headers.get("Content-Type", "")
+                raw = response.read()
+            if content_type and "json" not in content_type.lower():
+                raise ValueError("non-JSON response: " + content_type)
+            return json.loads(raw), None
+        except urllib.error.HTTPError as exc:
+            body = " ".join(exc.read(500).decode("utf-8", errors="replace").split())
+            last_error = f"HTTP {exc.code}: {body[:400]}"
+            if exc.code not in {429, 500, 502, 503, 504} or attempt >= MAX_RETRIES:
+                break
+            time.sleep(min(8, 2 ** attempt))
+        except (urllib.error.URLError, TimeoutError, ValueError, json.JSONDecodeError) as exc:
+            last_error = f"{type(exc).__name__}: {str(exc)[:300]}"
+            if attempt >= MAX_RETRIES:
+                break
+            time.sleep(min(8, 2 ** attempt))
+    source_errors.append(last_error or "unknown metadata error")
+    return None, last_error
+
+
+def fetch_openalex_batches(papers, source_errors):
+    by_doi = {}
+    request_count = 0
+    for start in range(0, len(papers), OPENALEX_BATCH_SIZE):
+        batch = papers[start:start + OPENALEX_BATCH_SIZE]
+        filters = "|".join("doi:" + urllib.parse.quote("https://doi.org/" + p["doi"], safe="") for p in batch)
+        url = "https://api.openalex.org/works?filter=" + filters + "&per-page=" + str(OPENALEX_BATCH_SIZE)
+        request_count += 1
+        payload, error = retry_json(url, source_errors)
+        if payload is None:
+            continue
+        for item in payload.get("results", []):
+            doi = str(item.get("doi") or "").lower().replace("https://doi.org/", "").strip()
+            if not doi:
+                continue
+            by_doi[doi] = item
         time.sleep(REQUEST_INTERVAL_SECONDS)
-    return attempted, enriched
+    return by_doi, request_count
+
+
+def fetch_epmc(doi, source_errors):
+    query = urllib.parse.quote('DOI:"' + doi + '"', safe="")
+    url = "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=" + query + "&format=json"
+    payload, error = retry_json(url, source_errors)
+    if not payload:
+        return None
+    results = payload.get("resultList", {}).get("result", [])
+    if not results:
+        return None
+    return clean_text(results[0].get("abstractText")) or None
+
+
+def base_score(paper):
+    paper_type, _ = classify_paper(paper)
+    if paper_type == "non-research":
+        return None
+    score = 2 if paper_type == "original-research" else 1
+    title_hits = sorted(set(m.group(0).lower() for m in RESEARCH_TITLE.finditer(normalize_title(paper.get("title")))))
+    score += min(2, len(title_hits))
+    return score
 
 
 def score_candidate(paper):
-    title = normalize_title(paper.get("title"))
-    abstract = paper.get("_abstract") or ""
     paper_type, type_reason = classify_paper(paper)
-    evidence = []
-    questions = []
-    score = 0
-
-    if paper_type == "original-research":
-        score += 2
-        evidence.append("记录未显示为综述或非研究类型")
-    elif paper_type == "review":
-        score += 1
-        evidence.append("标记为综述/Survey，适合背景审查而非新实验结论")
-        questions.append("需确认是否为综述而非原创实验研究")
-    else:
+    if paper_type == "non-research":
         return None
-
-    title_hits = sorted(set(m.group(0).lower() for m in RESEARCH_TITLE.finditer(title)))
+    title_hits = sorted(set(m.group(0).lower() for m in RESEARCH_TITLE.finditer(normalize_title(paper.get("title")))))
+    reasons = []
+    questions = []
+    score = 2 if paper_type == "original-research" else 1
+    if paper_type == "review":
+        reasons.append("标记为综述/Survey，不能当作新的实验成果")
+        questions.append("需确认综述范围及其引用的原始研究")
+    else:
+        reasons.append("记录未显示为综述或明确非研究类型")
     if title_hits:
         score += min(2, len(title_hits))
-        evidence.append("标题含研究对象或方法线索：" + ", ".join(title_hits[:4]))
+        reasons.append("标题提供研究对象或方法线索：" + ", ".join(title_hits[:4]))
     else:
         questions.append("标题未显示清晰的研究问题或方法")
-
+    abstract = paper.get("_abstract")
     if abstract:
         score += 3
-        evidence.append("已获得可清洗的摘要，可进行下一阶段内容核查")
+        reasons.append("存在来自外部元数据源的真实摘要")
         confidence = "medium"
         if len(abstract) >= 400:
             score += 1
             confidence = "high"
     else:
-        questions.append("摘要不可用，不能据此判断研究结论、创新性或科学意义")
         confidence = "low"
-
+        questions.append("摘要不可用，不能据此判断研究结论、创新性或科学意义")
     if not parse_date(paper.get("publicationDate")):
         questions.append("发表日期精度或格式需要核验")
-
     if paper_type == "review":
         score = min(score, 5)
-
     return {
         "score": score,
         "confidence": confidence,
         "paperType": paper_type,
-        "evidence": evidence,
+        "reasons": reasons,
         "questions": questions,
-        "abstract": abstract or None,
+        "abstract": abstract,
         "abstractSource": paper.get("_abstractSource"),
         "typeReason": type_reason,
     }
-
-
-def load_candidates(path):
-    payload = json.loads(Path(path).read_text(encoding="utf-8"))
-    papers = payload.get("papers", [])
-    if not isinstance(papers, list):
-        raise ValueError("science-candidates.json 的 papers 必须是数组")
-    return payload, [p for p in papers if p.get("subject") in SUBJECTS]
 
 
 def main():
@@ -175,7 +193,8 @@ def main():
     parser.add_argument("--output", default="science-shortlist.json")
     args = parser.parse_args()
 
-    payload, papers = load_candidates(args.input)
+    payload = json.loads(Path(args.input).read_text(encoding="utf-8"))
+    papers = [p for p in payload.get("papers", []) if p.get("subject") in SUBJECTS]
     excluded = []
     eligible = []
     for paper in papers:
@@ -185,87 +204,117 @@ def main():
         else:
             eligible.append(paper)
 
-    attempted, fetched = enrich_abstracts(eligible)
-    grouped = defaultdict(list)
+    enrichment_pool = sorted(
+        eligible,
+        key=lambda p: (base_score(p), parse_date(p.get("publicationDate")) or date.min, p.get("doi", "")),
+        reverse=True,
+    )[:ENRICHMENT_LIMIT]
+
+    source_errors = []
+    openalex_items, openalex_requests = fetch_openalex_batches(enrichment_pool, source_errors)
+    openalex_matches = 0
+    abstracts_fetched = 0
+    epmc_attempts = 0
+    epmc_matches = 0
+
+    for paper in enrichment_pool:
+        doi = str(paper.get("doi") or "").lower()
+        item = openalex_items.get(doi)
+        if item:
+            openalex_matches += 1
+            abstract = restore_inverted(item.get("abstract_inverted_index"))
+            if abstract:
+                paper["_abstract"] = abstract[:6000]
+                paper["_abstractSource"] = "OpenAlex abstract_inverted_index"
+                abstracts_fetched += 1
+
+    for paper in enrichment_pool:
+        if paper.get("_abstract") or paper.get("subject") != "Biology":
+            continue
+        epmc_attempts += 1
+        abstract = fetch_epmc(paper.get("doi", ""), source_errors)
+        if abstract:
+            paper["_abstract"] = abstract[:6000]
+            paper["_abstractSource"] = "Europe PMC abstractText"
+            abstracts_fetched += 1
+            epmc_matches += 1
+
+    ranked = []
     for paper in eligible:
         result = score_candidate(paper)
-        if result and result["score"] >= MIN_SCORE:
-            grouped[paper["subject"]].append((result, paper))
+        if result:
+            ranked.append((result, paper))
+    ranked.sort(
+        key=lambda pair: (
+            pair[0]["score"],
+            pair[0]["confidence"] == "high",
+            pair[0]["confidence"] == "medium",
+            parse_date(pair[1].get("publicationDate")) or date.min,
+            pair[1].get("doi", ""),
+        ),
+        reverse=True,
+    )
 
     selected = []
-    by_subject = {}
-    for subject in SUBJECTS:
-        ranked = sorted(
-            grouped.get(subject, []),
-            key=lambda pair: (
-                pair[0]["score"],
-                pair[0]["confidence"] == "high",
-                pair[0]["confidence"] == "medium",
-                parse_date(pair[1].get("publicationDate")) or date.min,
-                pair[1].get("doi", ""),
-            ),
-            reverse=True,
-        )[:MAX_PER_SUBJECT]
-        by_subject[subject] = {"inputEligible": sum(1 for p in eligible if p.get("subject") == subject), "selected": len(ranked), "max": MAX_PER_SUBJECT}
-        for result, paper in ranked:
-            selected.append({
-                "doi": paper.get("doi"),
-                "title": normalize_title(paper.get("title")),
-                "titleOriginal": paper.get("titleOriginal") or paper.get("title"),
-                "journal": paper.get("journal"),
-                "subject": subject,
-                "publicationDate": paper.get("publicationDate"),
-                "publicationDateField": paper.get("publicationDateField"),
-                "recordType": paper.get("recordType"),
-                "paperType": result["paperType"],
-                "url": paper.get("url") or ("https://doi.org/" + str(paper.get("doi"))),
-                "abstract": result["abstract"],
-                "abstractSource": result["abstractSource"],
-                "abstractStatus": "available" if result["abstract"] else "unavailable",
-                "priorityScore": result["score"],
-                "screeningConfidence": result["confidence"],
-                "screeningReasons": result["evidence"],
-                "questionsForFurtherReview": result["questions"],
-                "screeningDisclaimer": "初筛分数仅用于后续审查排序，不代表研究质量、重要性或可信度。",
-            })
+    for result, paper in ranked[:FINAL_LIMIT]:
+        selected.append({
+            "doi": paper.get("doi"),
+            "title": normalize_title(paper.get("title")),
+            "titleOriginal": paper.get("titleOriginal") or paper.get("title"),
+            "journal": paper.get("journal"),
+            "subject": paper.get("subject"),
+            "publicationDate": paper.get("publicationDate"),
+            "publicationDateField": paper.get("publicationDateField"),
+            "recordType": paper.get("recordType"),
+            "paperType": result["paperType"],
+            "url": paper.get("url") or ("https://doi.org/" + str(paper.get("doi"))),
+            "abstract": result["abstract"],
+            "abstractSource": result["abstractSource"],
+            "abstractStatus": "available" if result["abstract"] else "unavailable",
+            "priorityScore": result["score"],
+            "screeningConfidence": result["confidence"],
+            "screeningReasons": result["reasons"],
+            "questionsForFurtherReview": result["questions"],
+            "abstractUsageLimitations": "摘要来自第三方元数据，仅供编辑审查；不得自动作为正式新闻全文转载。",
+            "screeningDisclaimer": "初筛分数仅用于后续审查排序，不代表研究质量、重要性或可信度。",
+        })
 
-    selected.sort(key=lambda p: (SUBJECTS.index(p["subject"]), -p["priorityScore"], p["doi"] or ""))
-    scores = defaultdict(int)
-    confidences = defaultdict(int)
-    for paper in selected:
-        scores[str(paper["priorityScore"])] += 1
-        confidences[paper["screeningConfidence"]] += 1
+    by_subject = {subject: sum(p["subject"] == subject for p in selected) for subject in SUBJECTS}
+    score_distribution = defaultdict(int)
+    confidence_distribution = defaultdict(int)
+    for p in selected:
+        score_distribution[str(p["priorityScore"])] += 1
+        confidence_distribution[p["screeningConfidence"]] += 1
 
     output = {
-        "schemaVersion": "1.1",
+        "schemaVersion": "1.2",
         "kind": "science_research_shortlist",
         "status": "ready_for_editorial_review",
         "generatedAt": datetime.now(timezone.utc).isoformat(),
-        "source": {
-            "file": args.input,
-            "collectorStatus": payload.get("status"),
-            "collectorCount": payload.get("count"),
-            "collectorCollectedAt": payload.get("collectedAt"),
-        },
+        "source": {"file": args.input, "collectorStatus": payload.get("status"), "collectorCount": payload.get("count"), "collectorCollectedAt": payload.get("collectedAt")},
         "rules": {
             "subjects": list(SUBJECTS),
-            "maxPerSubject": MAX_PER_SUBJECT,
-            "minimumScore": MIN_SCORE,
+            "enrichmentLimit": ENRICHMENT_LIMIT,
+            "finalLimit": FINAL_LIMIT,
             "journalPrestigeUsedAsImportance": False,
-            "abstractPolicy": "优先读取 Crossref DOI 元数据；无摘要则明确标记，不编造",
-            "exclusionPolicy": "仅排除明确文献类型或标题开头的勘误/撤稿/社论等",
+            "abstractPolicy": "OpenAlex 优先；生物医学候选在 OpenAlex 无摘要时尝试 Europe PMC；没有摘要则为 null。",
         },
         "statistics": {
             "inputCandidates": len(papers),
             "eligibleCandidates": len(eligible),
             "excluded": len(excluded),
-            "selected": len(selected),
-            "abstractLookupAttempted": attempted,
-            "abstractsFetched": fetched,
-            "abstractFetchRate": round(fetched / attempted, 4) if attempted else 0,
-            "scoreDistribution": dict(scores),
-            "confidenceDistribution": dict(confidences),
+            "enrichmentPool": len(enrichment_pool),
+            "openAlexRequests": openalex_requests,
+            "openAlexMatches": openalex_matches,
+            "epmcRequests": epmc_attempts,
+            "epmcMatches": epmc_matches,
+            "abstractsFetched": abstracts_fetched,
+            "abstractFetchRate": round(abstracts_fetched / len(enrichment_pool), 4) if enrichment_pool else 0,
+            "sourceErrors": source_errors,
             "bySubject": by_subject,
+            "scoreDistribution": dict(score_distribution),
+            "confidenceDistribution": dict(confidence_distribution),
+            "selected": len(selected),
         },
         "papers": selected,
         "excluded": excluded,
