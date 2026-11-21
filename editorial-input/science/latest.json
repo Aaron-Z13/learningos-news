@@ -1,11 +1,11 @@
 {
   "schemaVersion": "1.0",
   "kind": "science_editorial_input_index",
-  "date": "2026-11-21",
-  "runId": 44785728767,
+  "date": "2026-11-22",
+  "runId": 44926108721,
   "runAttempt": 1,
-  "path": "editorial-input/science/2026-11-21-run-44785728767-attempt-1.json",
-  "candidateCount": 705,
+  "path": "editorial-input/science/2026-11-22-run-44926108721-attempt-1.json",
+  "candidateCount": 663,
   "shortlistCount": 30,
-  "abstractFetchRate": 0.9
+  "abstractFetchRate": 0.86
 }
